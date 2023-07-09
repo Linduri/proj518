@@ -48,8 +48,19 @@ for idx, row in faults.iterrows():
 logger.info(f"Unpacked {len(all_steps)} operations "
             f"for {len(faults)} procedures.")
 
-all_steps = all_steps.sort_values(["operation", "step"])
-print(all_steps)
+series = all_steps.sort_values(["procedure", "step"])
+series["start"] = \
+    series.duration.cumsum() - series.duration
+
+series = series.merge(operations, left_on='operation', right_on="id")
+series = series.drop("duration_y", axis=1)
+series.rename(columns={'duration_x': 'duration'}, inplace=True)
+series = series.sort_values(["start"])
+print(series)
+
+fig, ax = plt.subplots(1, figsize=(16, 6))
+ax.barh(series.name, series.duration, left=series.start)
+plt.show()
 
 # max_steps = all_steps.step.max()
 # for idx, fault in faults.iterrows():
