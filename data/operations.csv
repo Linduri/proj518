@@ -1,0 +1,24 @@
+id,name,duration
+0,engine lift,1200
+1,remove external panels,600
+2,drain oil,600
+3,remove internal panels,300
+4,disconnect gearbox,900
+5,disconnect exhaust,300
+6,disconnect fuel lines,600
+7,remove drive belt,120
+8,remove belt tensioner,120
+9,gearbox removal,1200
+10,change oil filter,180
+11,remove secondary pump,600
+12,remove primary pump,7200
+13,disconnect cabling,300
+14,remove starter motor,600
+15,remove alternator,600
+16,remove battery,300
+17,remove air filter,300
+18,drain coolant,600
+19,remove engine oil pressure switch,120
+20,remove vaccuum hose,120
+21,remove speed sensor,300
+22,remover fuel filter,180
