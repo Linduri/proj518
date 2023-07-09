@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 logger = logging.getLogger()
@@ -57,10 +58,11 @@ series = series.drop("duration_y", axis=1)
 series.rename(columns={'duration_x': 'duration'}, inplace=True)
 series = series.sort_values(["start"])
 
-
-colors = ['black', 'red', 'green', 'blue', 'cyan']
+n_faults = len(faults)
+cmap = plt.get_cmap("gist_rainbow", n_faults)
+custom_palette = [mpl.colors.rgb2hex(cmap(i)) for i in range(cmap.N)]
 unique = pd.DataFrame({"procedure": series["procedure"].unique(),
-                       "color": colors})
+                       "color": custom_palette})
 series = series.merge(unique, left_on="procedure", right_on="procedure")
 
 fig, ax = plt.subplots(1, figsize=(16, 6))
