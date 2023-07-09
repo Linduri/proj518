@@ -56,10 +56,15 @@ series = series.merge(operations, left_on='operation', right_on="id")
 series = series.drop("duration_y", axis=1)
 series.rename(columns={'duration_x': 'duration'}, inplace=True)
 series = series.sort_values(["start"])
-print(series)
+
+
+colors = ['black', 'red', 'green', 'blue', 'cyan']
+unique = pd.DataFrame({"procedure": series["procedure"].unique(),
+                       "color": colors})
+series = series.merge(unique, left_on="procedure", right_on="procedure")
 
 fig, ax = plt.subplots(1, figsize=(16, 6))
-ax.barh(series.name, series.duration, left=series.start)
+ax.barh(series.name, series.duration, left=series.start, color=series.color)
 plt.show()
 
 # max_steps = all_steps.step.max()
