@@ -49,8 +49,16 @@ for idx, row in faults.iterrows():
 logger.info(f"Unpacked {len(all_steps)} operations "
             f"for {len(faults)} procedures.")
 
-# Generate start times based on operation duration.
+n_duplicates = len(all_steps["operation"]) - \
+    len(all_steps["operation"].drop_duplicates())
+
+logger.info(f"Detected {n_duplicates} duplicate operations.")
+
+# Group similar operations
 series = all_steps.sort_values(["procedure", "step"])
+series.reset_index(inplace=True)
+
+# Calculate series start times.
 series["start"] = \
     series.duration.cumsum() - series.duration
 
@@ -68,7 +76,42 @@ unique = pd.DataFrame({"procedure": series["procedure"].unique(),
                        "color": custom_palette})
 series = series.merge(unique, left_on="procedure", right_on="procedure")
 
-# Plot the Gantt chart
+series.name = series.name + " " + series.procedure.astype(str)
+
+max_time = series.tail(1).start.values[0] + series.tail(1).duration.values[0]
+
+# Plot the Gantt chart.
 fig, ax = plt.subplots(1, figsize=(16, 6))
 ax.barh(series.name, series.duration, left=series.start, color=series.color)
+ax.set_xlim(0, max_time)
+plt.show()
+
+X = series.operation.unique()
+for x in X:
+    Y = series.loc[series.operation == x]
+
+    if len(Y) > 1:
+        i = 1
+        for idx, y in Y.iloc[1:].iterrows():
+            i = Y.index[0] + 0.0001*i
+            series.loc[i] = y
+            series.drop(idx, inplace=True)
+            i += 1
+
+        series.sort_index(inplace=True)
+        series.reset_index(drop=True, inplace=True)
+
+# Calculate parallel start times.
+series.iloc[0, series.columns.get_loc('start')] = 0
+for idx, row in series[1:].iterrows():
+    series.iloc[idx, series.columns.get_loc('start')] = \
+        series.iloc[idx-1].start
+    if series.iloc[idx-1].operation != row.operation:
+        series.iloc[idx, series.columns.get_loc('start')] += \
+            series.iloc[idx-1].duration
+
+# Plot the Gantt chart.
+fig, ax = plt.subplots(1, figsize=(16, 6))
+ax.barh(series.name, series.duration, left=series.start, color=series.color)
+ax.set_xlim(0, max_time)
 plt.show()

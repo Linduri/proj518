@@ -1,10 +1,14 @@
 {
     "cSpell.words": [
+        "astype",
         "barh",
         "cumsum",
         "figsize",
         "Gantt",
+        "iloc",
         "iterrows",
-        "VHCL"
+        "itertuples",
+        "VHCL",
+        "xlim"
     ]
 }
