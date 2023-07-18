@@ -70,10 +70,7 @@ class Vehicle:
         self.series.name = self.series.name + " " + \
             self.series.procedure.astype(str)
 
-        self.repair_duration = self.series.tail(1).start.values[0] + \
-            self.series.tail(1).duration.values[0]
-
-    def optimize_repairs(self):
+    def optimize(self):
         self.logger.info((f"Optimizing {len(self.series)} "
                          "operation scheduling..."))
         X = self.series.operation.unique()
@@ -102,6 +99,10 @@ class Vehicle:
 
         self.logger.info(f"Optimized {len(self.series)} operation schedule.")
 
+    def repair_duration(self):
+        return self.series.tail(1).start.values[0] + \
+            self.series.tail(1).duration.values[0]
+
     def plot_gantt(self):
         fig, ax = plt.subplots(1, figsize=(16, 6))
         ax.barh(self.series.name,
@@ -109,5 +110,5 @@ class Vehicle:
                 left=self.series.start,
                 color=self.series.color)
         ax.set_xlim(0,
-                    self.repair_duration)
+                    self.repair_duration())
         plt.show()
