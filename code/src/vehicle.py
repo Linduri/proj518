@@ -103,12 +103,16 @@ class Vehicle:
         return self.series.tail(1).start.values[0] + \
             self.series.tail(1).duration.values[0]
 
-    def plot_gantt(self):
-        fig, ax = plt.subplots(1, figsize=(16, 6))
+    def plot_gantt(self, ax=None):
+        if ax is None:
+            fig, ax = plt.subplots(1, figsize=(16, 6))
+
         ax.barh(self.series.name,
                 self.series.duration,
                 left=self.series.start,
                 color=self.series.color)
         ax.set_xlim(0,
                     self.repair_duration())
-        plt.show()
+
+        if ax is None:
+            plt.show()

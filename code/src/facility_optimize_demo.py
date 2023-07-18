@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+import matplotlib.pyplot as plt
 from compendium import Compendium
 from vehicle import Vehicle
 
@@ -36,6 +37,7 @@ for vehicle in vehicles:
                        vehicle]["failure_date"].to_list(),
             c))
 
-for v in V:
+fig, axs = plt.subplots(len(vehicles), figsize=(16, 16))
+for idx, v in enumerate(V):
     v.optimize()
-    v.plot_gantt()
+    v.plot_gantt(axs[idx])
