@@ -1,6 +1,7 @@
 import pandas as pd
 import logging
 import matplotlib.pyplot as plt
+import numpy as np
 from compendium import Compendium
 from vehicle import Vehicle
 
@@ -28,16 +29,34 @@ logger.info(vehicles)
 
 V = []
 for vehicle in vehicles:
-    V.append(
-        Vehicle(
+    v = Vehicle(
             vehicle,
             faults.loc[faults["vehicle"] ==
                        vehicle]["procedure"].to_list(),
             faults.loc[faults["failure_date"] ==
                        vehicle]["failure_date"].to_list(),
-            c))
+            c)
+    v.optimize()
+    V.append(v)
+
+durations = [v.repair_duration() for v in V]
+logger.info("Calculated vehicle repair durations...")
+logger.info(f"{durations}")
+
+cum_duration = np.cumsum(durations)
+logger.info("Calculated cumulative vehicle repair durations...")
+logger.info(f"{cum_duration}")
+
+delays = [0]
+delays.extend(cum_duration[0:-1])
+logger.info("Calculated vehicle repair start delays...")
+logger.info(f"{delays}")
 
 fig, axs = plt.subplots(len(vehicles), figsize=(16, 16))
 for idx, v in enumerate(V):
     v.optimize()
-    v.plot_gantt(axs[idx])
+    series = v.get_ops(delays[idx])
+    v.plot_gantt(ax=axs[idx],
+                 series=series,
+                 x_max=cum_duration[-1])
+    axs[idx].set_title(v.name)

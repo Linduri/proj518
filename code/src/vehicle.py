@@ -18,7 +18,7 @@ class Vehicle:
         self.c = c
 
         self.logger = logging.getLogger()
-        self.logger.info("Unpacking operations...")
+        self.logger.debug("Unpacking operations...")
         out_cols = ["procedure", "operation", "step"]
         self.steps = pd.DataFrame(columns=out_cols)
         for fault in faults:
@@ -35,13 +35,13 @@ class Vehicle:
 
             self.steps = pd.concat([self.steps, _rows], ignore_index=True)
 
-        self.logger.info(f"Unpacked {len(self.steps)} operations "
-                         f"for {len(faults)} procedures.")
+        self.logger.debug(f"Unpacked {len(self.steps)} operations "
+                          f"for {len(faults)} procedures.")
 
         n_duplicates = len(self.steps["operation"]) - \
             len(self.steps["operation"].drop_duplicates())
 
-        self.logger.info(f"Detected {n_duplicates} duplicate operations.")
+        self.logger.debug(f"Detected {n_duplicates} duplicate operations.")
 
         self.logger.debug("Grouping similar operations...")
         self.series = self.steps.sort_values(["procedure", "step"])
@@ -99,20 +99,39 @@ class Vehicle:
 
         self.logger.info(f"Optimized {len(self.series)} operation schedule.")
 
-    def repair_duration(self):
-        return self.series.tail(1).start.values[0] + \
-            self.series.tail(1).duration.values[0]
+    def repair_duration(self, series=None):
+        if series is None:
+            series = self.series
 
-    def plot_gantt(self, ax=None):
+        return series.tail(1).start.values[0] + \
+            series.tail(1).duration.values[0]
+
+    def plot_gantt(self, ax=None, series=None, x_max=None):
         if ax is None:
             fig, ax = plt.subplots(1, figsize=(16, 6))
 
-        ax.barh(self.series.name,
-                self.series.duration,
-                left=self.series.start,
-                color=self.series.color)
+        if series is None:
+            series = self.series
+
+        ax.barh(series.name,
+                series.duration,
+                left=series.start,
+                color=series.color)
         ax.set_xlim(0,
-                    self.repair_duration())
+                    self.repair_duration(series) if x_max is None else x_max)
 
         if ax is None:
             plt.show()
+
+    def get_ops(self, delay=0):
+        ops = self.series[["procedure",
+                           "operation",
+                           "step",
+                           "duration",
+                           "start",
+                           "name",
+                           "color"]]
+
+        ops.loc[:, "start"] += delay
+
+        return ops
