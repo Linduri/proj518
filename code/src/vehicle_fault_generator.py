@@ -2,6 +2,7 @@ import pandas as pd
 import random
 import logging
 import datetime
+from compendium import Compendium
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -17,21 +18,10 @@ n_vehicles = 5
 start_date = datetime.date(2023, 7, 1)
 end_date = datetime.date(2023, 12, 1)
 
-logger.info("Loading facilities...")
-facilities = pd.read_csv(facilities_csv)
-logger.info(f"Loaded {len(facilities)} facilities.")
-
-logger.info("Loading procedure names...")
-procedure_names = pd.read_csv(procedure_names_csv)
-logger.info(f"Loaded {len(procedure_names)} unique procedures.")
-
-logger.info("Loading procedures steps...")
-procedure_steps = pd.read_csv(procedure_steps_csv)
-logger.info(f"Loaded {len(procedure_steps)} procedure steps.")
-
-logger.info("Loading operations...")
-operations = pd.read_csv(operations_csv)
-logger.info(f"Loaded {len(operations)} operations.")
+c = Compendium(facilities_csv,
+               procedure_names_csv,
+               procedure_steps_csv,
+               operations_csv)
 
 logger.info(f"Generating {n_vehicles} names...")
 ids = random.sample(range(1000, 3000), n_vehicles)
@@ -48,7 +38,7 @@ for idx, name in enumerate(names):
     n_faults = random.randint(1, 5)
     logger.debug((f"Selecting {n_faults} random procedure"
                   f"{'s' if n_faults > 1 else ''}..."))
-    vehicle_faults = procedure_names.sample(n_faults)
+    vehicle_faults = c.procs.sample(n_faults)
     logger.debug(f"Selected faults: {', '.join(vehicle_faults['name'])}")
 
     logger.debug(f"Generating {len(vehicle_faults)} failure dates...")
@@ -61,9 +51,10 @@ for idx, name in enumerate(names):
     fault_dates_strings = [date.strftime('%d/%m/%Y') for date in fault_dates]
     logger.debug(f"Generated dates: {', '.join(fault_dates_strings)}")
 
-    new_rows = pd.DataFrame({"vehicle": [name for _ in range(vehicle_faults.shape[0])],
-                             "procedure": vehicle_faults["id"],
-                             "failure_date": fault_dates_strings})
+    new_rows = pd.DataFrame(
+        {"vehicle": [name for _ in range(vehicle_faults.shape[0])],
+         "procedure": vehicle_faults["id"],
+         "failure_date": fault_dates_strings})
 
     faults = pd.concat([faults, new_rows], ignore_index=True)
 

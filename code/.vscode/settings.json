@@ -9,6 +9,14 @@
         "iterrows",
         "itertuples",
         "VHCL",
-        "xlim"
+        "xlim",
+        "procs",
+        "cmap",
+        "matplotlib",
+        "pyplot",
+        "facs"
+    ],
+    "python.analysis.extraPaths": [
+        "./src"
     ]
 }
