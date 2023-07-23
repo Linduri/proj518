@@ -44,6 +44,8 @@ class Facility:
             data=P
         )
 
+        print(D)
+
         # Assign procedures to bays.
 
         # Optimize adjacent procedures to same vehicle.

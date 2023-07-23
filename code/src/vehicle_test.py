@@ -32,4 +32,4 @@ V = [Vehicle(v,
 logger.debug(f"Loaded {len(V)} vehicle{'s' if len(V) > 1 else ''}.")
 
 for v in V:
-    logger.info(f"{v.name} has procedures {v.P()}")
+    logger.info(f"{v.id} has procedures {v.P()}")

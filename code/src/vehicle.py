@@ -6,11 +6,11 @@ from compendium import Compendium
 class Vehicle:
 
     def __init__(self,
-                 name: str,
+                 id: str,
                  procedures: List[int],
                  procedure_dates,
                  c: Compendium):
-        self.name = name
+        self.id = id
         self.c = c
 
         self.F = pd.DataFrame(
