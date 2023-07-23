@@ -11,7 +11,7 @@ facilities_csv = "../data/facilities.csv"
 procedure_names_csv = "../data/procedure_names.csv"
 procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
-fault_output_csv = "../data/faults.csv"
+fault_output_csv = "../data/vehicle_faults.csv"
 
 n_vehicles = 5
 
@@ -49,12 +49,13 @@ for idx, name in enumerate(names):
         random_date = start_date + datetime.timedelta(days=rand_days)
         fault_dates.append(random_date)
     fault_dates_strings = [date.strftime('%d/%m/%Y') for date in fault_dates]
+    fault_dates_epochs = [date.strftime('%s') for date in fault_dates]
     logger.debug(f"Generated dates: {', '.join(fault_dates_strings)}")
 
     new_rows = pd.DataFrame(
-        {"vehicle": [name for _ in range(vehicle_faults.shape[0])],
+        {"vehicle": [idx for _ in range(vehicle_faults.shape[0])],
          "procedure": vehicle_faults["id"],
-         "failure_date": fault_dates_strings})
+         "failure_date": fault_dates_epochs})
 
     faults = pd.concat([faults, new_rows], ignore_index=True)
 

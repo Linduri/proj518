@@ -2,19 +2,20 @@
     "cSpell.words": [
         "astype",
         "barh",
+        "cmap",
         "cumsum",
+        "facs",
         "figsize",
         "Gantt",
         "iloc",
+        "isin",
         "iterrows",
         "itertuples",
-        "VHCL",
-        "xlim",
-        "procs",
-        "cmap",
         "matplotlib",
+        "procs",
         "pyplot",
-        "facs"
+        "VHCL",
+        "xlim"
     ],
     "python.analysis.extraPaths": [
         "./src"

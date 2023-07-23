@@ -12,6 +12,7 @@ class Compendium:
 
         self.logger = logging.getLogger()
 
+        self.logger.info("Loading compendium...")
         self.logger.info("Loading facilities...")
         self.facs = pd.read_csv(facilities_path)
         self.logger.info(f"Loaded {len(self.facs)} facilities.")
@@ -29,3 +30,4 @@ class Compendium:
         self.logger.info("Loading operations...")
         self.ops = pd.read_csv(operations_path)
         self.logger.info(f"Loaded {len(self.ops)} operations.")
+        self.logger.info("Loaded compendium!")
