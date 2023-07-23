@@ -28,5 +28,5 @@ v = Vehicle(faults["vehicle"][0],
             c)
 
 v.plot_gantt()
-v.optimize_repairs()
+v.optimize()
 v.plot_gantt()
