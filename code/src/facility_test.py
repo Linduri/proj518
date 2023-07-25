@@ -32,6 +32,11 @@ V = [Vehicle(v,
 
 logger.debug(f"Loaded {len(V)} vehicle{'s' if len(V) > 1 else ''}.")
 
+VD = pd.DataFrame({
+    'v': [v.id for v in V for _ in v.P()],
+    'p': [p for v in V for p in v.P()]
+})
+
 F = [Facility(f.name,
               f.latitude,
               f.longitude,
@@ -39,8 +44,18 @@ F = [Facility(f.name,
               f.open,
               f.close,
               f.stop,
-              f.bays) for idx, f in c.facs.iterrows()
+              f.bays) for _, f in c.facs.iterrows()
      ]
 
+logger.debug(f"Loaded {len(F)} facilit{'ies' if len(F) > 1 else 'y'}.")
+
 for f in F:
-    f.print_info()
+    logger.debug(f.info())
+
+logger.info("Randomly sampling 60% of faults...")
+VDs = VD.sample(frac=0.6)
+
+F[0].optimize(
+    V,
+    list(VDs.itertuples(index=False, name=None))
+)
