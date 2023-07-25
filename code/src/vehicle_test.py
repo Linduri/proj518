@@ -33,3 +33,6 @@ logger.debug(f"Loaded {len(V)} vehicle{'s' if len(V) > 1 else ''}.")
 
 for v in V:
     logger.info(f"{v.id} has procedures {v.P()}")
+
+logger.info("Vehicle 0 procedures have ops...")
+logger.info(V[1].get_ops(V[1].P()))

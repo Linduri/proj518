@@ -37,7 +37,7 @@ class Vehicle:
             List[int]: List of datetimes.
         """
         return self.F.t.to_list()
-    
+
     def get_ops(self, P: List[int]):
         """
         Get an optimized sequence of operations for
@@ -46,3 +46,6 @@ class Vehicle:
         Args:
             P (List[int]): List of procedure IDs to get.
         """
+        ops = self.ops.loc[self.ops.procedure.isin(P)]
+
+        return ops
