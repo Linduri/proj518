@@ -3,6 +3,7 @@
         "astype",
         "barh",
         "cmap",
+        "cumcount",
         "cumsum",
         "facilit",
         "facs",

@@ -32,21 +32,6 @@ class Facility:
                 f" OPEN [{self.open} - {self.close}]"
                 f" BAYS [{self.bays}]")
 
-    def rand_bays(self, n: int):
-        """
-        Generates n random bay ids between 1 
-        (inclusive) and self.bays + 1 (exclusive).
-
-        Parameters:
-        n (int): Number of bay ids to generate.
-
-        Returns:
-        List[int]: List of bay ids.
-
-        """
-
-        return np.random.randint(1, self.bays+1, n)
-
     # Optimizer data structure
     #
     # row | vehicle | procedure | bay
@@ -71,11 +56,38 @@ class Facility:
             data=P
         )
 
+        self.evaluate(D)
+
+    def evaluate(self, D):
+        # v = vehicle
+        # p = procedure
+        # b = bay
+        # o = order
+        # P = procedure group
+
         # Assign procedures to bays.
-        D['b'] = self.rand_bays(len(D))
+        D['b'] = np.random.randint(1, self.bays+1, len(D))
+
+        # Assign bay order
+        D['o'] = D.groupby('b').cumcount()
+
+        # Sort by bay and order
+        D.sort_values(by=['b', 'o'], inplace=True)
+
+        # Group adjacent vehicle procedures (P).
+        D['P'] = D.groupby(
+                    'b',
+                    as_index=False,
+                    group_keys=False
+                ).apply(
+                    lambda b: (b['v'] != b.v.shift()).cumsum()
+                )
+
+        # Unpack procedure groups into optimized operations.
+        
         
         print(D)
-        
+
         # Optimize adjacent procedures to same vehicle.
         # Evaluate solution
         # Iterate
