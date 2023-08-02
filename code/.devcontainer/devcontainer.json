@@ -43,7 +43,8 @@
 				"ms-python.flake8",
 				"ms-python.isort",
 				"tomoki1207.pdf",
-				"streetsidesoftware.code-spell-checker"
+				"streetsidesoftware.code-spell-checker",
+				"ms-toolsai.jupyter"
 			]
 		}
 	},

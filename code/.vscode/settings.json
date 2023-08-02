@@ -5,6 +5,7 @@
         "cmap",
         "cumcount",
         "cumsum",
+        "Elementwise",
         "facilit",
         "facs",
         "figsize",
@@ -15,11 +16,14 @@
         "itertuples",
         "matplotlib",
         "procs",
+        "pymoo",
         "pyplot",
         "VHCL",
         "xlim"
     ],
     "python.analysis.extraPaths": [
+        "./src",
+        "./src",
         "./src"
     ]
 }
