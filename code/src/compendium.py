@@ -10,7 +10,7 @@ class Compendium:
                  procedure_steps_path,
                  operations_path):
 
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(__name__)
 
         self.logger.info("Loading compendium...")
         self.logger.info("Loading facilities...")

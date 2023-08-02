@@ -44,7 +44,8 @@
 				"ms-python.isort",
 				"tomoki1207.pdf",
 				"streetsidesoftware.code-spell-checker",
-				"ms-toolsai.jupyter"
+				"ms-toolsai.jupyter",
+				"donjayamanne.python-extension-pack"
 			]
 		}
 	},
