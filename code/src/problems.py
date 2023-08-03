@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import pandas as pd
 from pymoo.core.problem import ElementwiseProblem
 import logging
 
@@ -46,23 +47,40 @@ class Facility(ElementwiseProblem):
 
         x = np.reshape(x, (-1, 4))
 
-        # Group by bay.
-        B = np.unique(x[:, 3])
+        D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
+                         data=x)
 
-        for b in B:
-            Z = x[x[:, 3] == b, :]
+        # Find adjacent vehicle procedures.
+        D['c'] = D.groupby('b').cumcount()
 
-            # Cluster vehicles where vehicle id changes.
-            #  ________________________________________________________
-            # | vehicle | procedure | priority | bay | vehicle cluster |
-            # |=========|===========|==========|=====|=================|
-            # |   int   |    int    |    int   | int |       int       |
-            # |   ...   |    ...    |    ...   | ... |       ...       |
-            c = Z[:-1, 0] != Z[1:, 0]
-            c = np.insert(c, 0, False)
-            C = np.cumsum(c)
-            Z = np.concatenate((Z, C.reshape(-1, 1)), axis=1)
+        # Sort by bay and order
+        D.sort_values(by=['b', 'c'], inplace=True)
 
-            self.logger.info(Z)
+        # Group adjacent vehicle procedures (P).
+        B = D.groupby('b',
+                      as_index=False,
+                      group_keys=False)
 
+        D['c'] = B.apply(
+                    lambda b: (b['v'] != b.v.shift()).cumsum()
+                )
+
+        # Unpack bay procedures.
+        for _, b in B:
+            C = b.groupby('c',
+                          as_index=False,
+                          group_keys=False)
+
+            ops = np.empty((0, 8), int)
+            for _, c in C:
+                # Unpack bay procedure cluster operations (cO).
+                for _, _v, _p, _i, _b, _c in c.itertuples():
+                    o = self.ops[self.ops[:, 0] == _p]
+                    t = np.array([[_v, _p, _i, _b, _c] for _ in range(len(o))])
+                    o = np.concatenate([t, o],
+                                       axis=1)                    
+                    ops = np.concatenate([ops, o],
+                                         axis=0)
+
+            self.logger.info(f"\n{ops}")
         out['F'] = np.array([1])
