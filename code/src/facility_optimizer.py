@@ -27,11 +27,11 @@ c = Compendium(facilities_csv,
 # |   int   |    int    |    int   | int |
 # |   ...   |    ...    |    ...   | ... |
 V0 = np.array([[0, 3, 0, 1],
-              [0, 4, 1, 2],
+              [0, 4, 1, 3],
               [1, 1, 2, 3],
               [1, 2, 3, 3],
               [1, 4, 4, 2],
-              [2, 5, 5, 1]])
+              [2, 5, 5, 3]])
 
 V1 = np.array([[0, 3, 5, 1],
               [0, 4, 4, 2],
@@ -66,17 +66,15 @@ for p in P:
 
 logger.info("Unpacked procedures.")
 
-# print("Raw data")
-# print(V)
 n_var = 2
 n_bays = 3
 
 problem = Facility(n_bays=n_bays,
                    ops=ops)
 
-# res = dict()
-# print("Vehicle 0")
-# problem._evaluate(V[0], res)
+res = dict()
+print("Vehicle 0")
+problem._evaluate(V[0], res)
 
 # print("Vehicle 1")
 # problem._evaluate(V[1], res)

@@ -44,8 +44,25 @@ class Facility(ElementwiseProblem):
         # |   int   |    int    |    int   | int |
         # |   ...   |    ...    |    ...   | ... |
 
-        x = np.reshape(x, (-1, self.n_var+4))
+        x = np.reshape(x, (-1, 4))
 
-        print(x)
+        # Group by bay.
+        B = np.unique(x[:, 3])
+
+        for b in B:
+            Z = x[x[:, 3] == b, :]
+
+            # Cluster vehicles where vehicle id changes.
+            #  ________________________________________________________
+            # | vehicle | procedure | priority | bay | vehicle cluster |
+            # |=========|===========|==========|=====|=================|
+            # |   int   |    int    |    int   | int |       int       |
+            # |   ...   |    ...    |    ...   | ... |       ...       |
+            c = Z[:-1, 0] != Z[1:, 0]
+            c = np.insert(c, 0, False)
+            C = np.cumsum(c)
+            Z = np.concatenate((Z, C.reshape(-1, 1)), axis=1)
+
+            self.logger.info(Z)
 
         out['F'] = np.array([1])
