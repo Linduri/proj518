@@ -71,16 +71,22 @@ class Facility(ElementwiseProblem):
                           as_index=False,
                           group_keys=False)
 
-            ops = np.empty((0, 8), int)
+            ops = np.empty((0, 7), int)
             for _, c in C:
                 # Unpack bay procedure cluster operations (cO).
                 for _, _v, _p, _i, _b, _c in c.itertuples():
                     o = self.ops[self.ops[:, 0] == _p]
                     t = np.array([[_v, _p, _i, _b, _c] for _ in range(len(o))])
-                    o = np.concatenate([t, o],
-                                       axis=1)                    
+                    o = np.concatenate([t, o[:, 1:]],
+                                       axis=1)
+                    
                     ops = np.concatenate([ops, o],
                                          axis=0)
+                    
+            Ops = pd.DataFrame(columns=['v', 'p', 'i', 'b', 'c', 'o', 's'],
+                               data=ops)
+            
+            Ops = Ops.sort_values(['c', 's', 'o'])
 
-            self.logger.info(f"\n{ops}")
+            self.logger.info(f"\n{Ops}")
         out['F'] = np.array([1])
