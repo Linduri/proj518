@@ -71,40 +71,43 @@ class Facility(ElementwiseProblem):
                           as_index=False,
                           group_keys=False)
 
-            ops = np.empty((0, 7), int)
+            ops = pd.DataFrame(columns=['v',
+                                        'p',
+                                        'i',
+                                        'b',
+                                        'c',
+                                        'o',
+                                        's',
+                                        'd'])
             for _, c in C:
                 # Unpack bay procedure cluster operations (cO).
                 for _, _v, _p, _i, _b, _c in c.itertuples():
-                    o = self.ops[self.ops[:, 0] == _p]
+                    o = self.ops[self.ops.p == _p]
+                    o = o.drop(['p'], axis=1)
                     t = np.array([[_v, _p, _i, _b, _c] for _ in range(len(o))])
-                    o = np.concatenate([t, o[:, 1:]],
-                                       axis=1)
+                    t = pd.DataFrame(columns=['v', 'p', 'i', 'b', 'c'],
+                                     data=t)
 
-                    ops = np.concatenate([ops, o],
-                                         axis=0)
+                    self.logger.info(f"\n{o}")
+                    self.logger.info(f"\n{t}")
 
-            Ops = pd.DataFrame(columns=['v', 'p', 'i', 'b', 'c', 'o', 's'],
-                               data=ops)
+                    j = pd.concat([t, o.set_index(t.index)],
+                                  axis=1)
 
-            Ops = Ops.sort_values(['c', 's', 'o'])
+                    ops = pd.concat([ops, j])
 
-            V = Ops.groupby('v')
+            ops = ops.sort_values(['c', 's', 'o'])
 
-            # for _, v in V:
-            #     # Find adjacent vehicle operations.
-            #     # v['oc'] = v.groupby('o').cumcount()
-            #     _O = v.groupby('o',
-            #                    as_index=False,
-            #                    group_keys=False)
+            # Cluster operations (oc) by vehicle and bay.
+            V = ops.groupby('v')
 
-            #     v['oc'] = _O.apply(
-            #         lambda x: (x.o != x.o.shift()).cumsum()
-            #     )
-
-            Ops['oc'] = V.o.transform(
+            ops['oc'] = V.o.transform(
                 lambda x: (x != x.shift()).cumsum()
             )
 
-            self.logger.info(f"\n{Ops}")
+            # Get operation durations
+            ops['d'] = ops.oc
+
+            self.logger.info(f"\n{ops}")
 
         out['F'] = np.array([1])

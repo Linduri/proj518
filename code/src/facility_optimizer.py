@@ -1,5 +1,6 @@
 from problems import Facility
 import numpy as np
+import pandas as pd
 import logging
 from compendium import Compendium
 # from multiprocessing.pool import ThreadPool
@@ -47,22 +48,35 @@ V2 = np.array([[0, 3, 3, 1],
               [1, 4, 5, 2],
               [2, 5, 0, 1]])
 
-V = np.array([V0.flatten(),
+V = np.vstack((V0.flatten(),
               V1.flatten(),
-              V2.flatten()])
+              V2.flatten()))
+
+D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
+                 data=V0)
 
 # Unpack procedures to get operations and steps.
-#  _______________________________
-# | procedure | operation | step  |
-# |===========|===========|=======|
-# |    int    |    int    |  int  |
-# |    ...    |    ...    |  ...  |
+#  __________________________________________
+# | procedure | operation | step  | duration |
+# |    (p)    |    (o)    |  (s)  |    (d)   |
+# |===========|===========|=======|==========|
+# |    int    |    int    |  int  |    int   |
+# |    ...    |    ...    |  ...  |    ...   |
 logger.info("Unpacking procedures...")
-P = np.unique(V0[:, 1])
-ops = np.empty((0, 3), int)
+P = D.p.unique()
+od_dict = c.ops.set_index('id').to_dict()['duration']
+ops = pd.DataFrame(columns=['p', 'o', 's', 'd'])
 for p in P:
-    s = c.steps[c.steps.procedure == p].to_numpy()
-    ops = np.vstack((ops, s))
+    s = c.steps[c.steps.procedure == p].copy()
+    s['duration'] = s.operation.replace(od_dict)
+    s.rename(columns={'procedure': 'p',
+                      'operation': 'o',
+                      'step': 's',
+                      'duration': 'd'},
+             inplace=True)
+
+    ops = pd.concat([ops, s],
+                    ignore_index=True)
 
 logger.info("Unpacked procedures.")
 
@@ -74,7 +88,7 @@ problem = Facility(n_bays=n_bays,
 
 res = dict()
 print("Vehicle 0")
-problem._evaluate(V[0], res)
+problem._evaluate(D.to_numpy(), res)
 
 # print("Vehicle 1")
 # problem._evaluate(V[1], res)
