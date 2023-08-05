@@ -100,20 +100,21 @@ class Facility(ElementwiseProblem):
                 lambda x: (x != x.shift()).cumsum()
             )
 
-            # Find start times
+            # Find end times
             OC = ops.groupby('oc')
-            ops['t'] = OC.d.transform(max).cumsum().where(
+            ops['t_e'] = OC.d.transform(max).cumsum().where(
                 ops.o.transform(lambda x: (x != x.shift()))
                 )
 
             # Fill any operation clusters with the same start
             # time for context retention.
-            ops['t'] = ops.t.fillna(method='ffill')
+            ops['t_e'] = ops.t_e.fillna(method='ffill')
 
             # Offset operations back by their own duration
             # to get their start time.
-            ops['t'] -= ops['d']
+            ops['t_s'] = ops['t_e'] - ops['d']
 
             self.logger.info(f"\n{ops}")
 
-        out['F'] = np.array([1])
+        out['F'] = ops.t_e.max()
+        self.logger.info(f"\n{out['F']}")
