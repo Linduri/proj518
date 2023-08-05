@@ -62,7 +62,7 @@ class Facility(ElementwiseProblem):
                       group_keys=False)
 
         D['c'] = B.apply(
-                    lambda b: (b['v'] != b.v.shift()).cumsum()
+                    lambda b: (b.v != b.v.shift()).cumsum()
                 )
 
         # Unpack bay procedures.
@@ -79,14 +79,32 @@ class Facility(ElementwiseProblem):
                     t = np.array([[_v, _p, _i, _b, _c] for _ in range(len(o))])
                     o = np.concatenate([t, o[:, 1:]],
                                        axis=1)
-                    
+
                     ops = np.concatenate([ops, o],
                                          axis=0)
-                    
+
             Ops = pd.DataFrame(columns=['v', 'p', 'i', 'b', 'c', 'o', 's'],
                                data=ops)
-            
+
             Ops = Ops.sort_values(['c', 's', 'o'])
 
+            V = Ops.groupby('v')
+
+            # for _, v in V:
+            #     # Find adjacent vehicle operations.
+            #     # v['oc'] = v.groupby('o').cumcount()
+            #     _O = v.groupby('o',
+            #                    as_index=False,
+            #                    group_keys=False)
+
+            #     v['oc'] = _O.apply(
+            #         lambda x: (x.o != x.o.shift()).cumsum()
+            #     )
+
+            Ops['oc'] = V.o.transform(
+                lambda x: (x != x.shift()).cumsum()
+            )
+
             self.logger.info(f"\n{Ops}")
+
         out['F'] = np.array([1])
