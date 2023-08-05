@@ -84,11 +84,12 @@ class Facility(ElementwiseProblem):
                 for _, _v, _p, _i, _b, _c in c.itertuples():
                     o = self.ops[self.ops.p == _p]
                     o = o.drop(['p'], axis=1)
+                    o.reset_index(inplace=True, drop=True)
                     t = np.array([[_v, _p, _i, _b, _c] for _ in range(len(o))])
                     t = pd.DataFrame(columns=['v', 'p', 'i', 'b', 'c'],
                                      data=t)
 
-                    j = pd.concat([t, o.set_index(t.index)],
+                    j = pd.concat([t, o],
                                   axis=1)
 
                     ops = pd.concat([ops, j])
@@ -101,9 +102,6 @@ class Facility(ElementwiseProblem):
             ops['oc'] = V.o.transform(
                 lambda x: (x != x.shift()).cumsum()
             )
-
-            # Get operation durations
-            ops['d'] = ops.oc
 
             self.logger.info(f"\n{ops}")
 
