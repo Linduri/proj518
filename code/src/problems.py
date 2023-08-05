@@ -96,12 +96,23 @@ class Facility(ElementwiseProblem):
 
             ops = ops.sort_values(['c', 's', 'o'])
 
-            # Cluster operations (oc) by vehicle and bay.
-            V = ops.groupby('v')
-
-            ops['oc'] = V.o.transform(
+            ops['oc'] = ops.o.transform(
                 lambda x: (x != x.shift()).cumsum()
             )
+
+            # Find start times
+            OC = ops.groupby('oc')
+            ops['t'] = OC.d.transform(max).cumsum().where(
+                ops.o.transform(lambda x: (x != x.shift()))
+                )
+
+            # Fill any operation clusters with the same start
+            # time for context retention.
+            ops['t'] = ops.t.fillna(method='ffill')
+
+            # Offset operations back by their own duration
+            # to get their start time.
+            ops['t'] -= ops['d']
 
             self.logger.info(f"\n{ops}")
 
