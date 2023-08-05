@@ -88,9 +88,6 @@ class Facility(ElementwiseProblem):
                     t = pd.DataFrame(columns=['v', 'p', 'i', 'b', 'c'],
                                      data=t)
 
-                    self.logger.info(f"\n{o}")
-                    self.logger.info(f"\n{t}")
-
                     j = pd.concat([t, o.set_index(t.index)],
                                   axis=1)
 
