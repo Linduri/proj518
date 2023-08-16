@@ -60,7 +60,6 @@ p = Facility(n_bays=n_bays, ops=ops)
 m = BayMutator()
 
 logger.info(f"\n{V0}")
-logger.info("Mutating...")
 Vm = m._do(problem=p, X=D.to_numpy())
 logger.info("Mutated")
 logger.info(f"\n{Vm}")
