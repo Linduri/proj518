@@ -20,6 +20,7 @@ class Facility(ElementwiseProblem):
         self.logger.debug("Initializing facility problem...")
         self.ops = ops
         self.n_var = 2
+        self.n_bays = n_bays
 
         super().__init__(n_var=self.n_var,
                          n_obj=1,
