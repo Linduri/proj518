@@ -66,8 +66,11 @@ logger.info("Unpacked procedures.")
 n_var = 2
 n_bays = 3
 
-p = Facility(n_bays=n_bays, ops=ops)
-m = BayMutator(n_pop=len(V))
+p = Facility(n_bays=n_bays,
+             n_cols=4,
+             ops=ops)
+m = BayMutator(n_pop=len(V),
+               prob=0.5)
 
 logger.info(f"\n{V.reshape(len(V), -1, 4)}")
 Vm = m._do(problem=p, X=V)
