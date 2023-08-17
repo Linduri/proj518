@@ -40,18 +40,20 @@ class BayCrossover(Crossover):
 
         for i in range(n_matings):
             a, b = X[:, i, :]
-            a = a.reshape((-1, problem.n_cols))
-            b = b.reshape((-1, problem.n_cols))
-            n = len(a)
+            _a = a.reshape((-1, problem.n_cols))
+            _b = b.reshape((-1, problem.n_cols))
+            n = len(_a)
 
             if n > 1:
-                # Swap half of the bays to the same
-                # priority.
-                # int(n/2)
+                # Select (S) and swap half of the bays
+                # to the same priority.
                 rows = np.array(range(n))
                 np.random.shuffle(rows)
                 S = rows[:int(n/2)]
-                tmp = b[S].copy()
-                b[S], a[S] = a[S], tmp
+                tmp = _b[S].copy()
+                _b[S], _a[S] = _a[S], tmp
+
+                Y[0, i, :] = _a.reshape(a.shape)
+                Y[1, i, :] = _b.reshape(b.shape)
 
         return Y
