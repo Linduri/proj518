@@ -1,15 +1,20 @@
 from problems import Facility
+from mutators import BayMutator
 import numpy as np
 import pandas as pd
 import logging
 from compendium import Compendium
+from pymoo.algorithms.moo.nsga2 import NSGA2
+from crossover import BayCrossover
+from pymoo.optimize import minimize
+from pymoo.termination import get_termination
 # from multiprocessing.pool import ThreadPool
 # from pymoo.core.problem import StarmapParallelization
 # from pymoo.algorithms.soo.nonconvex.ga import GA
 # from pymoo.optimize import minimize
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 facilities_csv = "../data/facilities.csv"
 procedure_names_csv = "../data/procedure_names.csv"
@@ -83,12 +88,46 @@ logger.info("Unpacked procedures.")
 n_var = 2
 n_bays = 3
 
-problem = Facility(n_bays=n_bays,
-                   ops=ops)
+p = Facility(n_bays=n_bays,
+             ops=ops,
+             n_cols=4,
+             n_var=len(V[0]))
 
-res = dict()
-print("Vehicle 0")
-problem._evaluate(D.to_numpy(), res)
+# res = dict()
+# print("Vehicle 0")
+# p._evaluate(D.to_numpy(), res)
+
+logger.info("Initializing mutator...")
+m = BayMutator(n_pop=len(V))
+logger.info("Initialized mutator.")
+
+logger.info("Initializing crossover...")
+c = BayCrossover(n_pop=len(V))
+logger.info("Initialized crossover.")
+
+logger.info("Initializing algorithm...")
+a = NSGA2(
+    pop_size=len(V),
+    sampling=V,
+    mutation=m,
+    crossover=c
+)
+logger.info("Initialized algorithm.")
+
+logger.info("Initializing termination...")
+t = get_termination("n_gen", 10)
+logger.info("Initialized termination.")
+
+logger.info("Minimizing problem...")
+res = minimize(problem=p,
+               algorithm=a,
+               termination=t,
+            #    seed=_seed,
+            #    save_history=_save_history,
+               verbose=True,
+            #    callback=self._callback
+               )
+logger.info("Minimized problem.")
 
 # print("Vehicle 1")
 # problem._evaluate(V[1], res)

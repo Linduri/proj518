@@ -1,4 +1,4 @@
-import numpy as np
+# import numpy as np
 from pymoo.core.crossover import Crossover
 
 
@@ -33,24 +33,26 @@ class BayCrossover(Crossover):
         ]
 
         """
-
         _X = X.copy().reshape((self.n_pop, -1, problem.n_cols))
 
-        for idx, x in enumerate(_X):
-            # Randomly choose a selection (S) of bays.
-            P = np.random.rand(x.shape[0], 1)
-            S = np.where(P[:, 0] > self.prob)
+        print("Crossover")
+        print(_X)
 
-            # Mutate bays.
-            np.put(x[:, 3],
-                   S,
-                   np.random.randint(1, problem.n_bays))
+        # for idx, x in enumerate(_X):
+        #     # Randomly choose a selection (S) of bays.
+        #     P = np.random.rand(x.shape[0], 1)
+        #     S = np.where(P[:, 0] > self.prob)
 
-            # Randomly shuffle selected priorities (W).
-            W = x[S][:, 2]
-            np.random.shuffle(W)
-            np.put(x[:, 2], S, W)
+        #     # Mutate bays.
+        #     np.put(x[:, 3],
+        #            S,
+        #            np.random.randint(1, problem.n_bays))
 
-            _X[idx, :, :] = x
+        #     # Randomly shuffle selected priorities (W).
+        #     W = x[S][:, 2]
+        #     np.random.shuffle(W)
+        #     np.put(x[:, 2], S, W)
+
+        #     _X[idx, :, :] = x
 
         return _X.reshape(X.shape)

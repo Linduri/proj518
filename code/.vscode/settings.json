@@ -17,6 +17,8 @@
         "iterrows",
         "itertuples",
         "matplotlib",
+        "nonconvex",
+        "nsga",
         "procs",
         "pymoo",
         "pyplot",

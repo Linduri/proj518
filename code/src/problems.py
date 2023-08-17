@@ -7,7 +7,7 @@ import logging
 
 class Facility(ElementwiseProblem):
 
-    def __init__(self, n_bays, n_cols, ops, **kwargs):
+    def __init__(self, n_bays, n_cols, n_var, ops, **kwargs):
         """Initializes the facility problem.
 
         Args:
@@ -20,13 +20,13 @@ class Facility(ElementwiseProblem):
         self.logger.debug("Initializing facility problem...")
         self.ops = ops
         self.n_cols = n_cols
-        self.n_var = 2
+        self.n_var = n_var
         self.n_bays = n_bays
 
         super().__init__(n_var=self.n_var,
                          n_obj=1,
-                         xl=[0, 0],
-                         xu=[sys.maxsize, n_bays],
+                         xl=0,  # xl=[0, 0],
+                         xu=100,  # xu=[sys.maxsize, n_bays],
                          **kwargs)
 
         self.logger.debug("Initialized facility problem.")
@@ -116,7 +116,7 @@ class Facility(ElementwiseProblem):
             # to get their start time.
             ops['t_s'] = ops['t_e'] - ops['d']
 
-            self.logger.info(f"\n{ops}")
+            self.logger.debug(f"\n{ops}")
 
         out['F'] = ops.t_e.max()
-        self.logger.info(f"\n{out['F']}")
+        self.logger.debug(f"\n{out['F']}")
