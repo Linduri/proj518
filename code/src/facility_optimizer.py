@@ -122,10 +122,10 @@ logger.info("Minimizing problem...")
 res = minimize(problem=p,
                algorithm=a,
                termination=t,
-            #    seed=_seed,
-            #    save_history=_save_history,
+               # seed=_seed,
+               # save_history=_save_history,
                verbose=True,
-            #    callback=self._callback
+               # callback=self._callback
                )
 logger.info("Minimized problem.")
 

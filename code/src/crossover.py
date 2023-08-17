@@ -1,4 +1,4 @@
-# import numpy as np
+import numpy as np
 from pymoo.core.crossover import Crossover
 
 
@@ -33,26 +33,25 @@ class BayCrossover(Crossover):
         ]
 
         """
-        _X = X.copy().reshape((self.n_pop, -1, problem.n_cols))
+        _, n_matings, n_var = X.shape
+        Y = np.full((self.n_offsprings, n_matings, n_var),
+                    -1,
+                    dtype=int)
 
-        print("Crossover")
-        print(_X)
+        for i in range(n_matings):
+            a, b = X[:, i, :]
+            a = a.reshape((-1, problem.n_cols))
+            b = b.reshape((-1, problem.n_cols))
+            n = len(a)
 
-        # for idx, x in enumerate(_X):
-        #     # Randomly choose a selection (S) of bays.
-        #     P = np.random.rand(x.shape[0], 1)
-        #     S = np.where(P[:, 0] > self.prob)
+            if n > 1:
+                # Swap half of the bays to the same
+                # priority.
+                # int(n/2)
+                rows = np.array(range(n))
+                np.random.shuffle(rows)
+                S = rows[:int(n/2)]
+                tmp = b[S].copy()
+                b[S], a[S] = a[S], tmp
 
-        #     # Mutate bays.
-        #     np.put(x[:, 3],
-        #            S,
-        #            np.random.randint(1, problem.n_bays))
-
-        #     # Randomly shuffle selected priorities (W).
-        #     W = x[S][:, 2]
-        #     np.random.shuffle(W)
-        #     np.put(x[:, 2], S, W)
-
-        #     _X[idx, :, :] = x
-
-        return _X.reshape(X.shape)
+        return Y
