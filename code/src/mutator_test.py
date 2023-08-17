@@ -25,6 +25,16 @@ V0 = np.array([[0, 3, 0, 1],
               [1, 4, 4, 2],
               [2, 5, 5, 3]])
 
+V1 = np.array([[0, 3, 5, 1],
+              [0, 4, 4, 2],
+              [1, 1, 3, 3],
+              [1, 2, 2, 3],
+              [1, 4, 1, 2],
+              [2, 5, 0, 1]])
+
+V = np.vstack((V0.flatten(),
+              V1.flatten()))
+
 D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
                  data=V0)
 
@@ -57,9 +67,9 @@ n_var = 2
 n_bays = 3
 
 p = Facility(n_bays=n_bays, ops=ops)
-m = BayMutator()
+m = BayMutator(n_pop=len(V))
 
-logger.info(f"\n{V0}")
-Vm = m._do(problem=p, X=D.to_numpy())
+logger.info(f"\n{V.reshape(len(V), -1, 4)}")
+Vm = m._do(problem=p, X=V)
 logger.info("Mutated")
-logger.info(f"\n{Vm}")
+logger.info(f"\n{Vm.reshape(len(V), -1, 4)}")
