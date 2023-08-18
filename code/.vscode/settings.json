@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
+        "arange",
+        "argmin",
         "astype",
         "barh",
         "cmap",
@@ -26,6 +28,7 @@
         "xlim"
     ],
     "python.analysis.extraPaths": [
+        "./src",
         "./src",
         "./src",
         "./src",

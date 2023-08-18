@@ -6,8 +6,10 @@ import logging
 from compendium import Compendium
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from crossover import BayCrossover
+from callbacks import FacilityCallback
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
+import matplotlib.pyplot as plt
 # from multiprocessing.pool import ThreadPool
 # from pymoo.core.problem import StarmapParallelization
 # from pymoo.algorithms.soo.nonconvex.ga import GA
@@ -102,15 +104,19 @@ m = BayMutator(n_pop=len(V))
 logger.info("Initialized mutator.")
 
 logger.info("Initializing crossover...")
-c = BayCrossover(n_pop=len(V))
+x = BayCrossover(n_pop=len(V))
 logger.info("Initialized crossover.")
+
+logger.info("Initializing callback...")
+c = FacilityCallback()
+logger.info("Initialized callback.")
 
 logger.info("Initializing algorithm...")
 a = NSGA2(
     pop_size=len(V),
     sampling=V,
     mutation=m,
-    crossover=c
+    crossover=x
 )
 logger.info("Initialized algorithm.")
 
@@ -125,9 +131,16 @@ res = minimize(problem=p,
                # seed=_seed,
                # save_history=_save_history,
                verbose=True,
-               # callback=self._callback
+               callback=c
                )
-logger.info("Minimized problem.")
+
+val = res.algorithm.callback.data["F_best"]
+plt.plot(np.arange(len(val)), val)
+plt.show()
+
+print(res.algorithm.callback.data["x_best"])
+
+# logger.info("Minimized problem.")
 
 # print("Vehicle 1")
 # problem._evaluate(V[1], res)
