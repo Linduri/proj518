@@ -47,7 +47,16 @@ class Facility(ElementwiseProblem):
                     lambda b: (b.v != b.v.shift()).cumsum()
                 )
 
-        # Unpack bay procedures.
+        # Unpack bay procedures.        
+        Ops = pd.DataFrame(columns=['v',
+                                    'p',
+                                    'i',
+                                    'b',
+                                    'c',
+                                    'o',
+                                    's',
+                                    'd'])
+
         for _, b in B:
             C = b.groupby('c',
                           as_index=False,
@@ -96,9 +105,11 @@ class Facility(ElementwiseProblem):
             # to get their start time.
             ops['t_s'] = ops['t_e'] - ops['d']
 
-            self.logger.debug(f"\n{ops}")  
+            self.logger.debug(f"\n{ops}")
 
-        return ops
+            Ops = pd.concat([Ops, ops])
+
+        return Ops
 
     def _evaluate(self, x, out, *args, **kwargs):
         """Evaluates the facility problem.
@@ -122,6 +133,8 @@ class Facility(ElementwiseProblem):
                          data=_x)
 
         ops = self.expand_ops(D)
+
+        print(ops)
 
         out['F'] = ops.t_e.max()
         self.logger.debug(f"\n{out['F']}")
