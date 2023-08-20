@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def PlotBayOps(D, color_col=None):
-    D["vp"] = 'Bay' +\
+def PlotBayOps(D,
+               color_col=None,
+               verbose=False):
+    D["vp"] = 'Bay ' +\
         D.b.astype(str) +\
         ' Vehicle: ' +\
         D.v.astype(str) +\
@@ -33,3 +35,6 @@ def PlotBayOps(D, color_col=None):
              left=_D.t_s,
              color=_D.color)
     plt.show()
+
+    if verbose is True:
+        print(_D)

@@ -92,9 +92,9 @@ class Facility(ElementwiseProblem):
 
             # Find end times
             OC = ops.groupby('oc')
-            ops['t_e'] = OC.d.transform(max).cumsum().where(
-                ops.o.transform(lambda x: (x != x.shift()))
-                )
+            ops['t_e'] = OC.d.transform(max).where(
+                ops.oc.transform(lambda x: (x != x.shift()))
+                ).cumsum()
 
             # Fill any operation clusters with the same start
             # time for context retention.
