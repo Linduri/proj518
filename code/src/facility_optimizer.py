@@ -7,6 +7,7 @@ from compendium import Compendium
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from crossover import BayCrossover
 from callbacks import FacilityCallback
+from graphing import PlotBayOps
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
 import matplotlib.pyplot as plt
@@ -138,7 +139,18 @@ val = res.algorithm.callback.data["F_best"]
 plt.plot(np.arange(len(val)), val)
 plt.show()
 
-print(res.algorithm.callback.data["x_best"])
+# print(res.algorithm.callback.data["x_best"])
+
+I_plot = [0, -1]
+
+for i in I_plot:
+    x = np.reshape(res.algorithm.callback.data["x_best"][i], (-1, 4))
+
+    D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
+                     data=x)
+
+    ops = p.expand_ops(D)
+    PlotBayOps(ops)
 
 # logger.info("Minimized problem.")
 

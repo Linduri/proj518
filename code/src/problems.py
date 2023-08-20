@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 import pandas as pd
 from pymoo.core.problem import ElementwiseProblem
@@ -38,7 +37,7 @@ class Facility(ElementwiseProblem):
         # Sort by bay and order
         D.sort_values(by=['b', 'c'], inplace=True)
 
-        # Group adjacent vehicle procedures (P).
+        # Group adjacent vehicle bays (b).
         B = D.groupby('b',
                       as_index=False,
                       group_keys=False)
@@ -47,7 +46,7 @@ class Facility(ElementwiseProblem):
                     lambda b: (b.v != b.v.shift()).cumsum()
                 )
 
-        # Unpack bay procedures.        
+        # Unpack bay procedures.
         Ops = pd.DataFrame(columns=['v',
                                     'p',
                                     'i',
@@ -133,8 +132,6 @@ class Facility(ElementwiseProblem):
                          data=_x)
 
         ops = self.expand_ops(D)
-
-        print(ops)
 
         out['F'] = ops.t_e.max()
         self.logger.debug(f"\n{out['F']}")

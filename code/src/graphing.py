@@ -4,7 +4,9 @@ import pandas as pd
 
 
 def PlotBayOps(D, color_col=None):
-    D["vp"] = 'Vehicle: ' +\
+    D["vp"] = 'Bay' +\
+        D.b.astype(str) +\
+        ' Vehicle: ' +\
         D.v.astype(str) +\
         ' Procedure: ' +\
         D.p.astype(str) +\

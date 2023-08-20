@@ -1,8 +1,6 @@
 import logging
 import numpy as np
 import pandas as pd
-from compendium import Compendium
-from problems import Facility
 from graphing import PlotBayOps
 
 logger = logging.getLogger(__name__)
