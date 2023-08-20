@@ -147,10 +147,11 @@ for i in I_plot:
     x = np.reshape(res.algorithm.callback.data["x_best"][i], (-1, 4))
 
     D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
-                     data=x) 
+                     data=x)
 
     ops = p.expand_ops(D)
-    PlotBayOps(ops)
+    PlotBayOps(ops,
+               color_col='v')
 
 # logger.info("Minimized problem.")
 

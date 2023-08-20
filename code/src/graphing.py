@@ -6,9 +6,7 @@ import pandas as pd
 def PlotBayOps(D,
                color_col=None,
                verbose=False):
-    D["vp"] = 'Bay ' +\
-        D.b.astype(str) +\
-        ' Vehicle: ' +\
+    D["vp"] = ' Vehicle: ' +\
         D.v.astype(str) +\
         ' Procedure: ' +\
         D.p.astype(str) +\
@@ -30,10 +28,25 @@ def PlotBayOps(D,
 
     _D['color'] = _D.i_g.astype(int).map(pd.Series(palette))
 
-    plt.barh(y=_D.vp,
-             width=_D.d,
-             left=_D.t_s,
-             color=_D.color)
+    n_bays = len(_D.b.unique())
+    fig, axs = plt.subplots(n_bays,
+                            figsize=(15, 15))
+
+    x_lim = _D.t_e.max()
+
+    B = _D.groupby('b',
+                   as_index=False,
+                   group_keys=False)
+
+    for (i, b), ax in zip(B, axs):
+        ax.barh(y=b.vp,
+                width=b.d,
+                left=b.t_s,
+                color=b.color)
+
+        ax.set_title(f"Bay {i}")
+        ax.set_xlim([0, x_lim])
+
     plt.show()
 
     if verbose is True:
