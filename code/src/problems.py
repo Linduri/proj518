@@ -31,27 +31,7 @@ class Facility(ElementwiseProblem):
 
         self.logger.debug("Initialized facility problem.")
 
-    def _evaluate(self, x, out, *args, **kwargs):
-        """Evaluates the facility problem.
-
-        Args:
-            x (_type_): Population member to evaluate.
-
-            out (_type_): Evaluation results.
-        """
-
-        # Reshape to four columns...
-        #  ______________________________________
-        # | vehicle | procedure | priority | bay |
-        # |=========|===========|==========|=====|
-        # |   int   |    int    |    int   | int |
-        # |   ...   |    ...    |    ...   | ... |
-
-        x = np.reshape(x, (-1, 4))
-
-        D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
-                         data=x)
-
+    def expand_ops(self, D):
         # Find adjacent vehicle procedures.
         D['c'] = D.groupby('b').cumcount()
 
@@ -116,7 +96,32 @@ class Facility(ElementwiseProblem):
             # to get their start time.
             ops['t_s'] = ops['t_e'] - ops['d']
 
-            self.logger.debug(f"\n{ops}")
+            self.logger.debug(f"\n{ops}")  
+
+        return ops
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        """Evaluates the facility problem.
+
+        Args:
+            x (_type_): Population member to evaluate.
+
+            out (_type_): Evaluation results.
+        """
+
+        # Reshape to four columns...
+        #  ______________________________________
+        # | vehicle | procedure | priority | bay |
+        # |=========|===========|==========|=====|
+        # |   int   |    int    |    int   | int |
+        # |   ...   |    ...    |    ...   | ... |
+
+        _x = np.reshape(x, (-1, 4))
+
+        D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
+                         data=_x)
+
+        ops = self.expand_ops(D)
 
         out['F'] = ops.t_e.max()
         self.logger.debug(f"\n{out['F']}")
