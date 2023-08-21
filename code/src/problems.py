@@ -26,6 +26,7 @@ class Facility(ElementwiseProblem):
                          n_obj=1,
                          xl=0,  # xl=[0, 0],
                          xu=100,  # xu=[sys.maxsize, n_bays],
+                         n_ieq_constr=1,
                          **kwargs)
 
         self.logger.debug("Initialized facility problem.")
@@ -110,6 +111,37 @@ class Facility(ElementwiseProblem):
 
         return Ops
 
+    def constrain_simultaneity(self, ops: pd.DataFrame) -> bool:
+        """Check to see if vehicles have simultaneous
+        operations in different bays.
+
+        Args:
+            ops (pd.DataFrame): Expanded operations.
+
+        Returns:
+            bool: Constrained or unconstrained.
+        """
+        # Iterate through each vehicle (v).
+        V = ops.groupby('v',
+                        as_index=False,
+                        group_keys=False)
+
+        for _, v in V:
+            res = v.apply(
+                # (StartA <= EndB)  and  (EndA >= StartB)
+                lambda x: ((x['t_s'] < v['t_e']) &\
+                           (x['t_e'] > v['t_s'])).all(),
+                # temp,
+                axis=1
+            )
+
+            if res.any():
+                # 1 is unconstrained.
+                return 1
+
+        # 0 is constrained.
+        return 0
+
     def _evaluate(self, x, out, *args, **kwargs):
         """Evaluates the facility problem.
 
@@ -135,3 +167,6 @@ class Facility(ElementwiseProblem):
 
         out['F'] = ops.t_e.max()
         self.logger.debug(f"\n{out['F']}")
+
+        out['G'] = self.constrain_simultaneity(ops)
+        self.logger.debug(f"\n{out['G']}")
