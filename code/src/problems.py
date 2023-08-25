@@ -44,9 +44,7 @@ class Facility(ElementwiseProblem):
                       as_index=False,
                       group_keys=False)
 
-        D['c'] = B.apply(
-                    lambda b: (b.v != b.v.shift()).cumsum()
-                )
+        D['c'] = pd.concat([(b.v != b.v.shift()).cumsum() for _, b in B])
 
         # Unpack bay procedures.
         Ops = pd.DataFrame(columns=['v',

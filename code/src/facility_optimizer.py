@@ -122,7 +122,7 @@ a = NSGA2(
 logger.info("Initialized algorithm.")
 
 logger.info("Initializing termination...")
-t = get_termination("n_gen", 10)
+t = get_termination("n_gen", 50)
 logger.info("Initialized termination.")
 
 logger.info("Minimizing problem...")
@@ -140,17 +140,15 @@ plt.plot(np.arange(len(val)), val)
 plt.show()
 
 print(res.X)
-print(res.G)
 
-if res.X is not None:
-    n_res = len(res.X)
-    if n_res > 1:
-        x = res.X[0]
-    else:
-        x = res.X
+def print_opt(X):
+    if X is None:
+        return False
 
-    x = np.reshape(x, (-1, 4))
+    x = res.X[0] if X.shape[1] > 1 else res.X
+
     print(x)
+    x = np.reshape(x, (-1, 4))
 
     D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
                      data=x)
@@ -159,5 +157,6 @@ if res.X is not None:
     PlotBayOps(ops,
                color_col='v')
 
-else:
+
+if print_opt(res.X) is False:
     print("No constrained solutions found.")
