@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import piso
 from pymoo.core.problem import ElementwiseProblem
 import logging
 
@@ -102,8 +103,9 @@ class Facility(ElementwiseProblem):
             ops['t_e'] = ops.t_e.fillna(method='ffill')
 
             # Offset operations back by their own duration
-            # to get their start time.
-            ops['t_s'] = ops['t_e'] - ops['d']
+            # to get their start time. Offset by 1 to avoid
+            # overlapping intervals.
+            ops['t_s'] = ops['t_e'] - ops['d'] + 1
 
             self.logger.debug(f"\n{ops}")
 
@@ -127,20 +129,31 @@ class Facility(ElementwiseProblem):
                         group_keys=False)
 
         for _, v in V:
-            res = v.apply(
-                # (StartA <= EndB)  and  (EndA >= StartB)
-                lambda x: ((x['t_s'] < v['t_e']) &\
-                           (x['t_e'] > v['t_s'])).all(),
-                # temp,
-                axis=1
-            )
+            # print(v)
+            intervals = []
+            OC = v.groupby('oc',
+                           as_index=False,
+                           group_keys=False)
+
+            for _, oc in OC:
+
+                B = oc.groupby('b',
+                               as_index=False,
+                               group_keys=False)
+
+                for _, b in B:
+                    head = b.head(1).iloc[0]
+                    intervals.append((head.t_s, head.t_e))
+
+            ii = pd.IntervalIndex.from_tuples(intervals)
+            res = piso.adjacency_matrix(ii).any(axis=1).astype(int).values
 
             if res.any():
                 # 1 is unconstrained.
                 return 1
 
-        # 0 is constrained.
-        return 0
+        # <0 is constrained.
+        return -1
 
     def _evaluate(self, x, out, *args, **kwargs):
         """Evaluates the facility problem.

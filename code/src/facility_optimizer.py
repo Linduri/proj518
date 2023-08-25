@@ -130,7 +130,7 @@ res = minimize(problem=p,
                algorithm=a,
                termination=t,
                # seed=_seed,
-               # save_history=_save_history,
+               save_history=True,
                verbose=True,
                callback=c
                )
@@ -139,12 +139,18 @@ val = res.algorithm.callback.data["F_best"]
 plt.plot(np.arange(len(val)), val)
 plt.show()
 
-# print(res.algorithm.callback.data["x_best"])
+print(res.X)
+print(res.G)
 
-I_plot = [0, -1]
+if res.X is not None:
+    n_res = len(res.X)
+    if n_res > 1:
+        x = res.X[0]
+    else:
+        x = res.X
 
-for i in I_plot:
-    x = np.reshape(res.algorithm.callback.data["x_best"][i], (-1, 4))
+    x = np.reshape(x, (-1, 4))
+    print(x)
 
     D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
                      data=x)
@@ -153,24 +159,5 @@ for i in I_plot:
     PlotBayOps(ops,
                color_col='v')
 
-# logger.info("Minimized problem.")
-
-# print("Vehicle 1")
-# problem._evaluate(V[1], res)
-
-# print("Vehicle 2")
-# problem._evaluate(V[2], res)
-
-# # initialize the thread pool and create the runner
-# n_threads = 4
-# pool = ThreadPool(n_threads)
-# runner = StarmapParallelization(pool.starmap)
-
-# # define the problem by passing the starmap interface of the thread pool
-# problem = Facility(elementwise_runner=runner,
-#                    n_bays=V.p.max())
-
-# res = minimize(problem, GA(), termination=("n_gen", 200), seed=1)
-# print('Threads:', res.exec_time)
-
-# pool.close()
+else:
+    print("No constrained solutions found.")
