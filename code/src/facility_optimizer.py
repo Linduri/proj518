@@ -16,6 +16,8 @@ import matplotlib.pyplot as plt
 # from pymoo.algorithms.soo.nonconvex.ga import GA
 # from pymoo.optimize import minimize
 
+from optimizers import FacilityOptimizer
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -60,86 +62,15 @@ V = np.vstack((V0.flatten(),
               V1.flatten(),
               V2.flatten()))
 
-D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
-                 data=V0)
-
-# Unpack procedures to get operations and steps.
-#  __________________________________________
-# | procedure | operation | step  | duration |
-# |    (p)    |    (o)    |  (s)  |    (d)   |
-# |===========|===========|=======|==========|
-# |    int    |    int    |  int  |    int   |
-# |    ...    |    ...    |  ...  |    ...   |
-logger.info("Unpacking procedures...")
-P = D.p.unique()
-od_dict = c.ops.set_index('id').to_dict()['duration']
-ops = pd.DataFrame(columns=['p', 'o', 's', 'd'])
-for p in P:
-    s = c.steps[c.steps.procedure == p].copy()
-    s['duration'] = s.operation.replace(od_dict)
-    s.rename(columns={'procedure': 'p',
-                      'operation': 'o',
-                      'step': 's',
-                      'duration': 'd'},
-             inplace=True)
-
-    ops = pd.concat([ops, s],
-                    ignore_index=True)
-
-logger.info("Unpacked procedures.")
-
-n_var = 2
-n_bays = 3
-
-p = Facility(n_bays=n_bays,
-             ops=ops,
-             n_cols=4,
-             n_var=len(V[0]))
-
-# res = dict()
-# print("Vehicle 0")
-# p._evaluate(D.to_numpy(), res)
-
-logger.info("Initializing mutator...")
-m = BayMutator(n_pop=len(V))
-logger.info("Initialized mutator.")
-
-logger.info("Initializing crossover...")
-x = BayCrossover(n_pop=len(V))
-logger.info("Initialized crossover.")
-
-logger.info("Initializing callback...")
-c = FacilityCallback()
-logger.info("Initialized callback.")
-
-logger.info("Initializing algorithm...")
-a = NSGA2(
-    pop_size=len(V),
-    sampling=V,
-    mutation=m,
-    crossover=x
-)
-logger.info("Initialized algorithm.")
-
-logger.info("Initializing termination...")
-t = get_termination("n_gen", 50)
-logger.info("Initialized termination.")
-
-logger.info("Minimizing problem...")
-res = minimize(problem=p,
-               algorithm=a,
-               termination=t,
-               # seed=_seed,
-               save_history=True,
-               verbose=True,
-               callback=c
-               )
+optim = FacilityOptimizer(V, c)
+res = optim.evaluate()
 
 val = res.algorithm.callback.data["F_best"]
 plt.plot(np.arange(len(val)), val)
 plt.show()
 
 print(res.X)
+
 
 def print_opt(X):
     if X is None:
@@ -153,7 +84,7 @@ def print_opt(X):
     D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
                      data=x)
 
-    ops = p.expand_ops(D)
+    ops = optim.p.expand_ops(D)
     PlotBayOps(ops,
                color_col='v')
 

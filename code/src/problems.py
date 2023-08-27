@@ -7,7 +7,7 @@ import logging
 
 class Facility(ElementwiseProblem):
 
-    def __init__(self, n_bays, n_cols, n_var, ops, **kwargs):
+    def __init__(self, n_var, n_bays, ops, **kwargs):
         """Initializes the facility problem.
 
         Args:
@@ -19,11 +19,10 @@ class Facility(ElementwiseProblem):
         self.logger = logging.getLogger(__name__)
         self.logger.debug("Initializing facility problem...")
         self.ops = ops
-        self.n_cols = n_cols
-        self.n_var = n_var
+        self.n_cols = 4
         self.n_bays = n_bays
 
-        super().__init__(n_var=self.n_var,
+        super().__init__(n_var=n_var,
                          n_obj=1,
                          xl=0,  # xl=[0, 0],
                          xu=100,  # xu=[sys.maxsize, n_bays],

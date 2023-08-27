@@ -22,6 +22,7 @@
         "matplotlib",
         "nonconvex",
         "nsga",
+        "optim",
         "procs",
         "pymoo",
         "pyplot",
@@ -29,6 +30,7 @@
         "xlim"
     ],
     "python.analysis.extraPaths": [
+        "./src",
         "./src",
         "./src",
         "./src",
