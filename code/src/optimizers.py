@@ -8,19 +8,38 @@ from callbacks import FacilityCallback
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.termination import get_termination
 from pymoo.optimize import minimize
+from compendium import Compendium
 
 
 class FacilityOptimizer:
 
-    def __init__(self, V, c) -> None:
+    def __init__(self,
+                 V: np.array,
+                 n_bays: int,
+                 n_pop: int,
+                 c: Compendium) -> None:
+        """_summary_
 
+        Args:
+            V (np.array): List of vehicle id against
+            procedure id.
+            c (Compendium): Collection of static
+            vehicle and facility data.
+        """
         self.logger = logging.getLogger(__name__)
+
+        self.logger.debug("Seeding population...")
+        self.pop = self.seed_pop(V,
+                                 n_bays,
+                                 n_pop,
+                                 flatten=True)
+        self.logger.debug("Seeded population.")
 
         # Each population member should have the same
         # vehicle and procedure numbers so use the first
         # member to unpack the operations to save
         # processing time on each evaluation.
-        V0 = np.reshape(V[0], (-1, 4))
+        V0 = np.reshape(self.pop[0], (-1, 4))
         D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
                          data=V0)
 
@@ -48,22 +67,22 @@ class FacilityOptimizer:
                             ignore_index=True)
 
         self.ops = ops
-        self.logger.info("Unpacked procedures.")
+        self.logger.debug("Unpacked procedures.")
 
         n_bays = D.b.max()
 
         self.p = Facility(
-            n_var=len(V[0]),
+            n_var=len(self.pop[0]),
             n_bays=n_bays,
             ops=ops
         )
 
         self.logger.debug("Initializing mutator...")
-        m = BayMutator(n_pop=len(V))
+        m = BayMutator(n_pop=len(self.pop))
         self.logger.debug("Initialized mutator.")
 
         self.logger.debug("Initializing crossover...")
-        x = BayCrossover(n_pop=len(V))
+        x = BayCrossover(n_pop=len(self.pop))
         self.logger.debug("Initialized crossover.")
 
         self.logger.debug("Initializing callback...")
@@ -72,8 +91,8 @@ class FacilityOptimizer:
 
         self.logger.debug("Initializing algorithm...")
         self.a = NSGA2(
-            pop_size=len(V),
-            sampling=V,
+            pop_size=len(self.pop),
+            sampling=self.pop,
             mutation=m,
             crossover=x
         )
@@ -82,6 +101,35 @@ class FacilityOptimizer:
         self.logger.debug("Initializing termination...")
         self.t = get_termination("n_gen", 50)
         self.logger.debug("Initialized termination.")
+
+    def seed_pop(self, V, n_bays, n_pop, flatten=True):
+        pop = []
+
+        # Generate sequential base list of priorities (P)
+        P = np.arange(len(V))
+
+        for i in range(n_pop):
+            # Randomize priorities
+            np.random.shuffle(P)
+
+            # Generate randomized list of bays (B).
+            rng = np.random.default_rng()
+            B = rng.integers(low=1, high=n_bays+1, size=len(V))
+
+            # Convert rows to columns.
+            Pc = P.reshape((-1, 1))
+            B = B.reshape((-1, 1))
+
+            # Concatenate the new columns to the base vehicle
+            # data to create a new population member (m)
+            m = np.c_[V, Pc, B]
+
+            if flatten is True:
+                m = m.flatten()
+
+            pop.append(m)
+
+        return np.array(pop)
 
     def evaluate(self, seed=0):
 

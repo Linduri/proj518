@@ -1,15 +1,8 @@
-from problems import Facility
-from mutators import BayMutator
 import numpy as np
 import pandas as pd
 import logging
 from compendium import Compendium
-from pymoo.algorithms.moo.nsga2 import NSGA2
-from crossover import BayCrossover
-from callbacks import FacilityCallback
 from graphing import PlotBayOps
-from pymoo.optimize import minimize
-from pymoo.termination import get_termination
 import matplotlib.pyplot as plt
 # from multiprocessing.pool import ThreadPool
 # from pymoo.core.problem import StarmapParallelization
@@ -32,44 +25,27 @@ c = Compendium(facilities_csv,
                operations_csv)
 
 # Columns...
-#  ______________________________________
-# | vehicle | procedure | priority | bay |
-# |=========|===========|==========|=====|
-# |   int   |    int    |    int   | int |
-# |   ...   |    ...    |    ...   | ... |
-V0 = np.array([[0, 3, 0, 1],
-              [0, 4, 1, 3],
-              [1, 1, 2, 3],
-              [1, 2, 3, 3],
-              [1, 4, 4, 2],
-              [2, 5, 5, 3]])
+#  ______________________
+# | vehicle | procedure |
+# |=========|===========|
+# |   int   |    int    |
+# |   ...   |    ...    |
+V = np.array([[0, 3],
+              [0, 4],
+              [1, 1],
+              [1, 2],
+              [1, 4],
+              [2, 5]])
 
-V1 = np.array([[0, 3, 5, 1],
-              [0, 4, 4, 2],
-              [1, 1, 3, 3],
-              [1, 2, 2, 3],
-              [1, 4, 1, 2],
-              [2, 5, 0, 1]])
-
-V2 = np.array([[0, 3, 3, 1],
-              [0, 4, 4, 2],
-              [1, 1, 1, 3],
-              [1, 2, 2, 3],
-              [1, 4, 5, 2],
-              [2, 5, 0, 1]])
-
-V = np.vstack((V0.flatten(),
-              V1.flatten(),
-              V2.flatten()))
-
-optim = FacilityOptimizer(V, c)
+optim = FacilityOptimizer(V,
+                          n_bays=3,
+                          n_pop=3,
+                          c=c)
 res = optim.evaluate()
 
 val = res.algorithm.callback.data["F_best"]
 plt.plot(np.arange(len(val)), val)
 plt.show()
-
-print(res.X)
 
 
 def print_opt(X):
@@ -78,7 +54,6 @@ def print_opt(X):
 
     x = res.X[0] if X.shape[1] > 1 else res.X
 
-    print(x)
     x = np.reshape(x, (-1, 4))
 
     D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
