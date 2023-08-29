@@ -24,6 +24,10 @@ c = Compendium(facilities_csv,
                procedure_steps_csv,
                operations_csv)
 
+# Load vehicle faults.
+V = pd.read_csv("../data/vehicle_faults.csv")
+V = V[['vehicle', 'procedure']].to_numpy()
+
 # Columns...
 #  ______________________
 # | vehicle | procedure |
@@ -39,7 +43,7 @@ V = np.array([[0, 3],
 
 optim = FacilityOptimizer(V,
                           n_bays=3,
-                          n_pop=3,
+                          n_pop=50,
                           c=c)
 res = optim.evaluate()
 

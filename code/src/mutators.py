@@ -32,7 +32,7 @@ class BayMutator(Mutation):
 
         """
 
-        _X = X.copy().reshape((problem.n_pop, -1, problem.n_cols))
+        _X = X.copy().reshape((-1, problem.n_rows, problem.n_cols))
 
         for idx, x in enumerate(_X):
             # Randomly choose a selection (S) of bays.

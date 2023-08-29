@@ -11,6 +11,7 @@ class Facility(ElementwiseProblem):
                  n_var,
                  n_bays,
                  n_pop,
+                 n_rows,
                  ops, **kwargs):
         """Initializes the facility problem.
 
@@ -24,6 +25,7 @@ class Facility(ElementwiseProblem):
         self.logger.debug("Initializing facility problem...")
         self.ops = ops
         self.n_cols = 4
+        self.n_rows = n_rows
         self.n_bays = n_bays
         self.n_pop = n_pop
 

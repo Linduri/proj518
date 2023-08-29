@@ -75,6 +75,7 @@ class FacilityOptimizer:
             n_var=len(self.pop[0]),
             n_bays=n_bays,
             n_pop=n_pop,
+            n_rows=len(V),
             ops=ops
         )
 

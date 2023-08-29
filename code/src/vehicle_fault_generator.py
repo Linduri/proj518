@@ -13,7 +13,7 @@ procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
 fault_output_csv = "../data/vehicle_faults.csv"
 
-n_vehicles = 5
+n_vehicles = 6
 
 start_date = datetime.date(2023, 7, 1)
 end_date = datetime.date(2023, 12, 1)
@@ -61,5 +61,6 @@ for idx, name in enumerate(names):
 
 logger.info(faults)
 logger.info(f"Saving to csv at {fault_output_csv}")
-faults.to_csv(fault_output_csv)
+faults.to_csv(fault_output_csv,
+              index=False)
 logger.info("Saved!")
