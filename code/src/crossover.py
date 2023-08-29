@@ -4,8 +4,7 @@ from pymoo.core.crossover import Crossover
 
 class BayCrossover(Crossover):
 
-    def __init__(self,  n_pop, shift=False, prob=0.5, **kwargs):
-        self.n_pop = n_pop
+    def __init__(self, shift=False, prob=0.5, **kwargs):
         n_parents = 2
         n_offspring = 2
         super().__init__(n_parents,
@@ -34,7 +33,9 @@ class BayCrossover(Crossover):
 
         """
         _, n_matings, n_var = X.shape
-        Y = np.full((self.n_offsprings, n_matings, n_var),
+        Y = np.full((self.n_offsprings,
+                     n_matings,
+                     n_var),
                     -1,
                     dtype=int)
 

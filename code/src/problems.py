@@ -7,7 +7,11 @@ import logging
 
 class Facility(ElementwiseProblem):
 
-    def __init__(self, n_var, n_bays, ops, **kwargs):
+    def __init__(self,
+                 n_var,
+                 n_bays,
+                 n_pop,
+                 ops, **kwargs):
         """Initializes the facility problem.
 
         Args:
@@ -21,6 +25,7 @@ class Facility(ElementwiseProblem):
         self.ops = ops
         self.n_cols = 4
         self.n_bays = n_bays
+        self.n_pop = n_pop
 
         super().__init__(n_var=n_var,
                          n_obj=1,

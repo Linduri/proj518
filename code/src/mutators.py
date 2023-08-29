@@ -7,10 +7,9 @@ class BayMutator(Mutation):
     Mutates bay assignments.
     """
 
-    def __init__(self, n_pop, prob=0.5):
+    def __init__(self, prob=0.5):
         super().__init__()
         self.prob = prob
-        self.n_pop = n_pop
 
     def _do(self, problem, X, **kwargs):
         """
@@ -33,7 +32,7 @@ class BayMutator(Mutation):
 
         """
 
-        _X = X.copy().reshape((self.n_pop, -1, problem.n_cols))
+        _X = X.copy().reshape((problem.n_pop, -1, problem.n_cols))
 
         for idx, x in enumerate(_X):
             # Randomly choose a selection (S) of bays.

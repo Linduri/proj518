@@ -74,15 +74,16 @@ class FacilityOptimizer:
         self.p = Facility(
             n_var=len(self.pop[0]),
             n_bays=n_bays,
+            n_pop=n_pop,
             ops=ops
         )
 
         self.logger.debug("Initializing mutator...")
-        m = BayMutator(n_pop=len(self.pop))
+        m = BayMutator()
         self.logger.debug("Initialized mutator.")
 
         self.logger.debug("Initializing crossover...")
-        x = BayCrossover(n_pop=len(self.pop))
+        x = BayCrossover()
         self.logger.debug("Initialized crossover.")
 
         self.logger.debug("Initializing callback...")
