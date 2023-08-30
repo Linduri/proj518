@@ -56,7 +56,10 @@ def print_opt(X):
     if X is None:
         return False
 
-    x = res.X[0] if X.shape[1] > 1 else res.X
+    if len(X.shape) > 1:
+        x = res.X[0] if X.shape[1] > 1 else res.X
+    else:
+        x = res.X
 
     x = np.reshape(x, (-1, 4))
 
