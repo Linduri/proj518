@@ -23,6 +23,12 @@ class FacilityOptimizer:
         Args:
             V (np.array): List of vehicle id against
             procedure id.
+             _____________________
+            | vehicle | procedure |
+            |=========|===========|
+            |   int   |    int    |
+            |   ...   |    ...    |
+
             c (Compendium): Collection of static
             vehicle and facility data.
         """

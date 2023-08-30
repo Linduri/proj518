@@ -3,6 +3,58 @@ import pandas as pd
 import piso
 from pymoo.core.problem import ElementwiseProblem
 import logging
+from compendium import Compendium
+from optimizers import FacilityOptimizer
+
+
+class Fleet(ElementwiseProblem):
+    def __init__(self,
+                 VP,
+                 VL,
+                 n_pop,
+                 c: Compendium,
+                 elementwise=True,
+                 **kwargs):
+        """_summary_
+
+        Args:
+            VP (_type_): List of vehicles and procedures.
+            VL (_type_): List of vehicles and locations.
+             ________________________________
+            | vehicle | latitude | longitude |
+            |=========|==========|===========|
+            |   int   |  float   |   float   |
+            |   ...   |   ...    |    ...    |
+
+            n_pop (_type_): Size of population to evolve.
+            c (Compendium): _description_
+            elementwise (bool, optional): _description_. Defaults to True.
+        """
+
+        super().__init__(elementwise,
+                         **kwargs)
+
+        self.c = c
+        self.n_pop = n_pop
+        self.VP = VP
+        self.VL = VL
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        # Reshape to two columns...
+        #  _____________________
+        # | vehicle | procedure |
+        # |=========|===========|
+        # |   int   |    int    |
+        # |   ...   |    ...    |
+
+        _x = np.reshape(x, (-1, 2))
+
+        f_tups = self.c.facs.itertuples
+        for _, name, lat, lon, start, open, close, stop, bays in f_tups:
+            self.F.append(FacilityOptimizer(_x,
+                                            n_bays=bays,
+                                            n_pop=self.n_pop,
+                                            c=self.c))
 
 
 class Facility(ElementwiseProblem):
@@ -12,7 +64,9 @@ class Facility(ElementwiseProblem):
                  n_bays,
                  n_pop,
                  n_rows,
-                 ops, **kwargs):
+                 ops,
+                 elementwise=True,
+                 **kwargs):
         """Initializes the facility problem.
 
         Args:
@@ -34,6 +88,7 @@ class Facility(ElementwiseProblem):
                          xl=0,  # xl=[0, 0],
                          xu=100,  # xu=[sys.maxsize, n_bays],
                          n_ieq_constr=1,
+                         elementwise=elementwise,
                          **kwargs)
 
         self.logger.debug("Initialized facility problem.")
