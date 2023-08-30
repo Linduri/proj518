@@ -66,18 +66,22 @@ locs = pd.read_csv(vehicle_locations_csv)
 # Randomize locations
 locs = locs.sample(frac=1)
 
-# rng = np.random.default_rng()
-# i_rnd = rng.integers(0,
-#                      len(locs),
-#                      n_vehicles)
+rng = np.random.default_rng()
+i_rnd = rng.integers(0,
+                     len(locs),
+                     n_vehicles)
 
 i_arr = np.arange(n_vehicles)
+
+loc_dict = (dict(zip(i_arr, i_rnd)))
 
 lat_dict = (dict(zip(i_arr, locs['latitude'])))
 lon_dict = (dict(zip(i_arr, locs['longitude'])))
 
-faults["latitude"] = faults["vehicle"].map(lat_dict)
-faults["longitude"] = faults["vehicle"].map(lon_dict)
+faults['loc'] = faults["vehicle"].map(loc_dict)
+
+faults["latitude"] = faults["loc"].map(lat_dict)
+faults["longitude"] = faults["loc"].map(lon_dict)
 
 logger.info("Generated vehicle locations.")
 
