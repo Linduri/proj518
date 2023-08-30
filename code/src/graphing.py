@@ -51,3 +51,38 @@ def PlotBayOps(D,
 
     if verbose is True:
         print(_D)
+
+
+def PlotVehicleLocations(V, F):
+    # Plot locations to graph.
+    fig, ax = plt.subplots()
+
+    ax.scatter(x=F['latitude'],
+               y=F['longitude'])
+
+    for _, name, lat, lon in F.itertuples():
+        ax.annotate(str(name).capitalize(),
+                    (lat,
+                    lon),
+                    xytext=(5, 5),
+                    textcoords='offset points')
+
+    ax.scatter(x=V['latitude'],
+               y=V['longitude'])
+
+    # Group vehicle IDs
+    L = V.groupby('loc',
+                  as_index=False,
+                  group_keys=False)
+
+    for _, l in L:
+        names = l['vehicle'].unique()
+        names = [str(name) for name in names]
+        txt = ','.join(names)
+        ax.annotate(txt,
+                    (l['latitude'].iloc[0],
+                     l['longitude'].iloc[0]),
+                    xytext=(5, -10),
+                    textcoords='offset points')
+
+    plt.show()
