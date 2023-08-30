@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import random
 import logging
 import datetime
@@ -8,6 +9,7 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
 
 facilities_csv = "../data/facilities.csv"
+vehicle_locations_csv = "../data/vehicle_locations.csv"
 procedure_names_csv = "../data/procedure_names.csv"
 procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
@@ -58,6 +60,26 @@ for idx, name in enumerate(names):
          "failure_date": fault_dates_epochs})
 
     faults = pd.concat([faults, new_rows], ignore_index=True)
+
+logger.info("Generating vehicle locations...")
+locs = pd.read_csv(vehicle_locations_csv)
+# Randomize locations
+locs = locs.sample(frac=1)
+
+# rng = np.random.default_rng()
+# i_rnd = rng.integers(0,
+#                      len(locs),
+#                      n_vehicles)
+
+i_arr = np.arange(n_vehicles)
+
+lat_dict = (dict(zip(i_arr, locs['latitude'])))
+lon_dict = (dict(zip(i_arr, locs['longitude'])))
+
+faults["latitude"] = faults["vehicle"].map(lat_dict)
+faults["longitude"] = faults["vehicle"].map(lon_dict)
+
+logger.info("Generated vehicle locations.")
 
 logger.info(faults)
 logger.info(f"Saving to csv at {fault_output_csv}")
