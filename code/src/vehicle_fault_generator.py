@@ -15,7 +15,7 @@ procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
 fault_output_csv = "../data/vehicle_faults.csv"
 
-n_vehicles = 10
+n_vehicles = 3
 
 start_date = datetime.date(2023, 7, 1)
 end_date = datetime.date(2023, 12, 1)
@@ -67,8 +67,9 @@ locs = pd.read_csv(vehicle_locations_csv)
 locs = locs.sample(frac=1)
 
 rng = np.random.default_rng()
+i_max = n_vehicles if n_vehicles < len(locs) else len(locs)
 i_rnd = rng.integers(0,
-                     len(locs),
+                     i_max,
                      n_vehicles)
 
 i_arr = np.arange(n_vehicles)
