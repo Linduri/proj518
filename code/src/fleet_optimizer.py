@@ -2,6 +2,7 @@ import pandas as pd
 import logging
 from compendium import Compendium
 from graphing import PlotVehicleLocations
+from optimizers import FleetOptimizer
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -20,5 +21,12 @@ c = Compendium(facilities_csv,
 V = pd.read_csv("../data/vehicle_faults.csv")
 faults = V[['vehicle', 'procedure']].to_numpy()
 
+# Get vehicles and procedures
+VP = V[['vehicle', 'procedure']]
+
 PlotVehicleLocations(V[['vehicle', 'loc', 'latitude', 'longitude']],
                      c.facs[['name', 'latitude', 'longitude']])
+
+optim = FleetOptimizer(V[['vehicle', 'procedure', 'latitude', 'longitude']],
+                       3,
+                       c)
