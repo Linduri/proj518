@@ -1,5 +1,6 @@
 import numpy as np
-import pandas as pd
+import math
+from statistics import mean
 from pymoo.core.problem import ElementwiseProblem
 import logging
 from compendium import Compendium
@@ -15,7 +16,7 @@ class Fleet(ElementwiseProblem):
         """_summary_
 
         Args:
-            V (_type_): List of vehicles, procedures and locations.
+            V (_type_): Vehicle information.
              ____________________________________________
             | vehicle | procedure | latitude | longitude |
             |=========|===========|==========|===========|
@@ -31,38 +32,34 @@ class Fleet(ElementwiseProblem):
 
         self.c = c
         self.n_pop = n_pop
-        self.V
+        self.V = V
+        self.n_var = 1
 
-        super().__init__(elementwise,
+        super().__init__(n_var=self.n_var,
+                         n_obj=1,
+                         xl=0,  # xl=[0, 0],
+                         xu=100,  # xu=[sys.maxsize, n_bays],
+                         n_ieq_constr=0,
+                         elementwise=elementwise,
                          **kwargs)
 
         self.logger.debug("Initialized fleet problem.")
 
     def _evaluate(self, x, out, *args, **kwargs):
-        # Reshape to two columns...
-        #  ________________________________
-        # | vehicle | procedure | facility |
-        # |=========|===========|==========|
-        # |   int   |    int    |   int    |
-        # |   ...   |    ...    |   ...    |
+        # Reshape data to column of assigned facility ids.
+        F = np.reshape(x, (-1, 1))
 
-        _x = np.reshape(x, (-1, 3))
-        X = pd.DataFrame(columns=['v', 'p', 'f'],
-                         data=_x)
+        print(F)
 
-        F = X.groupby('f',
-                      as_index=False,
-                      group_keys=False)
+        # Find average distance of each vehicle to
+        # assigned facility.
+        d = []
+        for i, f in enumerate(F):
+            f_lat = self.c.facs[f]['latitude']
+            f_lon = self.c.facs[f]['longitude']
+            v_lat = self.V.iloc[i]['latitude']
+            v_lon = self.V.iloc[i]['longitude']
+            d.append(math.dist([f_lat, f_lon], [v_lat, v_lon]))
 
-        for f in F:
-            print(f)
-
-        # f_tups = self.c.facs.itertuples
-        # for _, name, lat, lon, start, open, close, stop, bays in f_tups:
-        #     self.F.append(FacilityOptimizer(_x,
-        #                                     n_bays=bays,
-        #                                     n_pop=self.n_pop,
-        #                                     c=self.c))
-
-        out['F'] = 1
+        out['F'] = mean(d)
         self.logger.debug(f"\n{out['F']}")

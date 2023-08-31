@@ -2,6 +2,40 @@ import numpy as np
 from pymoo.core.mutation import Mutation
 
 
+class FleetMutator(Mutation):
+    """
+    Mutates facility assignments.
+    """
+
+    def __init__(self, prob=0.5):
+        super().__init__()
+        self.prob = prob
+
+    def _do(self, problem, X, **kwargs):
+        # Reshape the population into a list of 
+        # facility ids.
+
+        _X = X.copy().reshape((-1, -1))
+
+        # Generate probability for each assignment
+        # to change.
+        P = np.random.rand(_X.shape[0], 1)
+
+        # Select rows past probability.
+        S = np.where(P[:, 0] < self.prob)
+
+        # Mutate bays.
+        rng = np.random.default_rng()
+
+        np.put(_X[:, 1],
+               S,
+               rng.integers(0,
+                            len(problem.c.facs),
+                            size=len(S[0])))
+
+        return _X.reshape(X.shape)
+
+
 class BayMutator(Mutation):
     """
     Mutates bay assignments.

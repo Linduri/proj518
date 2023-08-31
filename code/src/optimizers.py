@@ -3,7 +3,7 @@ import numpy as np
 import logging
 from problems import Facility
 from fleet_problem import Fleet
-from mutators import BayMutator
+from mutators import FleetMutator
 from crossover import BayCrossover
 from callbacks import FacilityCallback
 from pymoo.algorithms.moo.nsga2 import NSGA2
@@ -51,9 +51,9 @@ class FleetOptimizer:
         )
         self.logger.debug("Initialized problem.")
 
-        # self.logger.debug("Initializing mutator...")
-        # m = BayMutator()
-        # self.logger.debug("Initialized mutator.")
+        self.logger.debug("Initializing mutator...")
+        m = FleetMutator()
+        self.logger.debug("Initialized mutator.")
 
         # self.logger.debug("Initializing crossover...")
         # x = BayCrossover()
@@ -63,17 +63,17 @@ class FleetOptimizer:
         # self.c = FacilityCallback()
         # self.logger.debug("Initialized callback.")
 
-        # self.logger.debug("Initializing algorithm...")
-        # self.a = NSGA2(
-        #     pop_size=len(self.pop),
-        #     sampling=self.pop,
-        #     mutation=m,
-        #     crossover=x
-        # )
-        # self.logger.debug("Initialized algorithm.")
+        self.logger.debug("Initializing algorithm...")
+        self.a = NSGA2(
+            pop_size=len(self.pop),
+            sampling=self.pop,
+            mutation=m,
+            crossover=x
+        )
+        self.logger.debug("Initialized algorithm.")
 
-        # self.logger.debug("Initializing termination...")
-        # self.t = get_termination("n_gen", 50)
+        self.logger.debug("Initializing termination...")
+        self.t = get_termination("n_gen", 50)
         self.logger.debug("Initialized termination.")
 
     def seed_pop(self, V, n_pop, flatten=True):
@@ -133,7 +133,8 @@ class FleetOptimizer:
         self.logger.debug("Minimized problem.")
 
         return res
-    
+
+
 class FacilityOptimizer:
 
     def __init__(self,
