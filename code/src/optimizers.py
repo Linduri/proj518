@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 import logging
-from problems import Facility, Fleet
+from problems import Facility
+from fleet_problem import Fleet
 from mutators import BayMutator
 from crossover import BayCrossover
 from callbacks import FacilityCallback
@@ -42,13 +43,13 @@ class FleetOptimizer:
                                  flatten=True)
         self.logger.debug("Seeded population.")
 
-        # self.logger.debug("Initializing problem...")
-        # self.p = Fleet(
-        #     V,
-        #     len(self.pop),
-        #     c
-        # )
-        # self.logger.debug("Initialized problem.")
+        self.logger.debug("Initializing problem...")
+        self.p = Fleet(
+            self.pop,
+            len(self.pop),
+            c
+        )
+        self.logger.debug("Initialized problem.")
 
         # self.logger.debug("Initializing mutator...")
         # m = BayMutator()
