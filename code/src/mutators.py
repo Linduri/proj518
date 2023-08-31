@@ -12,26 +12,45 @@ class FleetMutator(Mutation):
         self.prob = prob
 
     def _do(self, problem, X, **kwargs):
-        # Reshape the population into a list of 
-        # facility ids.
+        """
+        Reshape the population into an array of
+        members.
 
-        _X = X.copy().reshape((-1, -1))
+        [ # Population
+            [ # Member one
+                [fac_id_0],
+                [fac_id_1],
+                [fac_id_2]
+            ],
+            [ # Member Two
+                [fac_id_0],
+                [fac_id_1],
+                [fac_id_2]
+            ]
+        ]
 
-        # Generate probability for each assignment
-        # to change.
-        P = np.random.rand(_X.shape[0], 1)
+        """
 
-        # Select rows past probability.
-        S = np.where(P[:, 0] < self.prob)
+        _X = X.copy().reshape((-1, len(problem.V), 1))
 
-        # Mutate bays.
-        rng = np.random.default_rng()
+        for idx, x in enumerate(_X):
+            # Generate probability for each assignment
+            # to change.
+            P = np.random.rand(x.shape[0], 1)
 
-        np.put(_X[:, 1],
-               S,
-               rng.integers(0,
-                            len(problem.c.facs),
-                            size=len(S[0])))
+            # Select rows past probability.
+            S = np.where(P[:, 0] < self.prob)
+
+            # Mutate bays.
+            rng = np.random.default_rng()
+
+            np.put(
+                x[:, 1],
+                S,
+                rng.integers(0,
+                             len(problem.c.facs),
+                             size=len(S[0]))
+            )
 
         return _X.reshape(X.shape)
 
