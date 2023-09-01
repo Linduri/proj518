@@ -44,6 +44,7 @@ V = V[['vehicle', 'procedure']].to_numpy()
 optim = FacilityOptimizer(V,
                           n_bays=3,
                           n_pop=50,
+                          n_gen=50,
                           c=c)
 res = optim.evaluate()
 

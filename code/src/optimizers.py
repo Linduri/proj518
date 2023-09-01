@@ -17,6 +17,7 @@ class FleetOptimizer:
     def __init__(self,
                  V: pd.DataFrame,
                  n_pop: int,
+                 n_gen: int,
                  c: Compendium) -> None:
         """_summary_
 
@@ -74,10 +75,13 @@ class FleetOptimizer:
         self.logger.debug("Initialized algorithm.")
 
         self.logger.debug("Initializing termination...")
-        self.t = get_termination("n_gen", 50)
+        self.t = get_termination("n_gen", n_gen)
         self.logger.debug("Initialized termination.")
 
-    def seed_pop(self, V, n_pop, flatten=True):
+    def seed_pop(self,
+                 V,
+                 n_pop,
+                 flatten=True):
         """_summary_
 
         Args:
@@ -141,6 +145,7 @@ class FacilityOptimizer:
                  V: np.array,
                  n_bays: int,
                  n_pop: int,
+                 n_gen: int,
                  c: Compendium) -> None:
         """_summary_
 
@@ -231,7 +236,7 @@ class FacilityOptimizer:
         self.logger.debug("Initialized algorithm.")
 
         self.logger.debug("Initializing termination...")
-        self.t = get_termination("n_gen", 50)
+        self.t = get_termination("n_gen", n_gen)
         self.logger.debug("Initialized termination.")
 
     def seed_pop(self, V, n_bays, n_pop, flatten=True):

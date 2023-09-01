@@ -23,9 +23,10 @@ c = Compendium(facilities_csv,
 V = pd.read_csv("../data/vehicle_faults.csv")
 faults = V[['vehicle', 'procedure']].to_numpy()
 
-optim = FleetOptimizer(V[['vehicle', 'procedure', 'latitude', 'longitude']],
-                       3,
-                       c)
+optim = FleetOptimizer(V=V[['vehicle', 'procedure', 'latitude', 'longitude']],
+                       n_pop=100,
+                       n_gen=50,
+                       c=c)
 
 res = optim.evaluate()
 
