@@ -1,9 +1,11 @@
 import numpy as np
+import pandas as pd
 import math
 from statistics import mean
 from pymoo.core.problem import ElementwiseProblem
 import logging
 from compendium import Compendium
+from facility_optimizer import FacilityOptimizer
 
 
 class Fleet(ElementwiseProblem):
@@ -11,6 +13,7 @@ class Fleet(ElementwiseProblem):
                  F,
                  V,
                  n_pop,
+                 n_gen,
                  c: Compendium,
                  elementwise=True,
                  **kwargs):
@@ -33,13 +36,14 @@ class Fleet(ElementwiseProblem):
 
         self.c = c
         self.n_pop = n_pop
+        self.n_gen = n_gen
         self.F = F
         self.V = V
         self.n_var = len(self.F[0])
         self.n_cols = 1
 
         super().__init__(n_var=self.n_var,
-                         n_obj=1,
+                         n_obj=2,
                          xl=0,  # xl=[0, 0],
                          xu=100,  # xu=[sys.maxsize, n_bays],
                          n_ieq_constr=0,
@@ -71,6 +75,27 @@ class Fleet(ElementwiseProblem):
 
         return mean(D)
 
+    def _max_duration(self,
+                      F: np.array) -> float:
+
+        df = pd.DataFrame(columns=['f'],
+                          data=F)
+
+        F = []
+        for f, vp in df.groupby('f', as_index=False, group_keys=False):
+            V = self.V.iloc[list(vp.index.values)]
+            optim = FacilityOptimizer(
+                V[['vehicle', 'procedure']],
+                n_bays=self.c.facs.iloc[f]['bays'],
+                n_pop=self.n_pop,
+                n_gen=self.n_gen,
+                c=self.c
+            )
+
+            F.append(optim.evaluate().F)
+
+        return F.max()
+
     def _evaluate(self, x, out, *args, **kwargs):
         # Reshape data to column of assigned facility ids.
         F = np.reshape(x, (-1, 1))
@@ -85,5 +110,6 @@ class Fleet(ElementwiseProblem):
             v_lon = self.V.iloc[i]['longitude']
             d.append(math.dist([f_lat, f_lon], [v_lat, v_lon]))
 
-        out['F'] = self._mean_dist(F)
+        out['F'] = [self._mean_dist(F),
+                    self._max_duration(F)]
         self.logger.debug(f"\n{out['F']}")

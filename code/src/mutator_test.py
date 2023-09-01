@@ -1,5 +1,5 @@
 import numpy as np
-from problems import Facility
+from facility_problem import Facility
 from mutators import BayMutator
 import pandas as pd
 import logging
