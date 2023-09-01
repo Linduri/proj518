@@ -43,8 +43,9 @@ V_best = pd.DataFrame(columns=['loc'],
 V_best['vehicle'] = V['vehicle']
 V_best['procedure'] = V['procedure']
 
-lat_dict = (dict(zip(V_best['vehicle'], c.facs['latitude'])))
-lon_dict = (dict(zip(V_best['vehicle'], c.facs['longitude'])))
+i_F = np.arange(len(c.facs))
+lat_dict = (dict(zip(i_F, c.facs['latitude'])))
+lon_dict = (dict(zip(i_F, c.facs['longitude'])))
 
 V_best["latitude"] = V_best["loc"].map(lat_dict)
 V_best["longitude"] = V_best["loc"].map(lon_dict)
