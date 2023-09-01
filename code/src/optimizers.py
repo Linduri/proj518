@@ -81,7 +81,7 @@ class FleetOptimizer:
         """_summary_
 
         Args:
-            V (_type_): _description_            
+            V (_type_): _description_
              ____________________________________________
             | vehicle | procedure | latitude | longitude |
             |=========|===========|==========|===========|

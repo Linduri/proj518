@@ -53,10 +53,45 @@ def PlotBayOps(D,
         print(_D)
 
 
-def PlotVehicleLocations(V, F):
+def PlotVehicleLocations(D, F, title=None):
     # Plot locations to graph.
     fig, ax = plt.subplots()
 
+    if title is not None:
+        fig.suptitle(title,
+                     fontsize=16)
+
+    # Plot vehicles.
+    ax.scatter(x=D['latitude'],
+               y=D['longitude'])
+
+    # Group vehicle IDs
+    L = D.groupby('loc',
+                  as_index=False,
+                  group_keys=False)
+
+    for _, l in L:
+        vp_tags = []
+        # Group by vehicle
+        V = l.groupby('vehicle',
+                      as_index=False,
+                      group_keys=False)
+
+        for _, v in V:
+            i_v = v.iloc[0].vehicle
+            P_v = ", ".join(v.procedure.astype(str))
+            vp_tags.append(f"{int(i_v)} ({P_v})")
+
+        # names = l['vehicle'].unique()
+        # names = [str(name) for name in names]
+        txt = ', '.join(vp_tags)
+        ax.annotate(txt,
+                    (l['latitude'].iloc[0],
+                     l['longitude'].iloc[0]),
+                    xytext=(5, -10),
+                    textcoords='offset points')
+
+    # Plot facilities.
     ax.scatter(x=F['latitude'],
                y=F['longitude'])
 
@@ -65,24 +100,6 @@ def PlotVehicleLocations(V, F):
                     (lat,
                     lon),
                     xytext=(5, 5),
-                    textcoords='offset points')
-
-    ax.scatter(x=V['latitude'],
-               y=V['longitude'])
-
-    # Group vehicle IDs
-    L = V.groupby('loc',
-                  as_index=False,
-                  group_keys=False)
-
-    for _, l in L:
-        names = l['vehicle'].unique()
-        names = [str(name) for name in names]
-        txt = ','.join(names)
-        ax.annotate(txt,
-                    (l['latitude'].iloc[0],
-                     l['longitude'].iloc[0]),
-                    xytext=(5, -10),
                     textcoords='offset points')
 
     plt.show()
