@@ -3,9 +3,9 @@ import numpy as np
 import logging
 from problems import Facility
 from fleet_problem import Fleet
-from mutators import FleetMutator
-from crossover import BayCrossover
-from callbacks import FacilityCallback
+from mutators import FleetMutator, BayMutator
+from crossover import FleetCrossover, BayCrossover
+from callbacks import OptimizerCallback
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.termination import get_termination
 from pymoo.optimize import minimize
@@ -46,6 +46,7 @@ class FleetOptimizer:
         self.logger.debug("Initializing problem...")
         self.p = Fleet(
             self.pop,
+            V,
             len(self.pop),
             c
         )
@@ -55,13 +56,13 @@ class FleetOptimizer:
         m = FleetMutator()
         self.logger.debug("Initialized mutator.")
 
-        # self.logger.debug("Initializing crossover...")
-        # x = BayCrossover()
-        # self.logger.debug("Initialized crossover.")
+        self.logger.debug("Initializing crossover...")
+        x = FleetCrossover()
+        self.logger.debug("Initialized crossover.")
 
-        # self.logger.debug("Initializing callback...")
-        # self.c = FacilityCallback()
-        # self.logger.debug("Initialized callback.")
+        self.logger.debug("Initializing callback...")
+        self.c = OptimizerCallback()
+        self.logger.debug("Initialized callback.")
 
         self.logger.debug("Initializing algorithm...")
         self.a = NSGA2(
@@ -108,8 +109,7 @@ class FleetOptimizer:
 
             # Concatenate the facility assignments
             # to create a new population member (m)
-            m = V.to_numpy()
-            m = np.c_[V, F_rnd]
+            m = F_rnd
 
             if flatten is True:
                 m = m.flatten()
@@ -218,7 +218,7 @@ class FacilityOptimizer:
         self.logger.debug("Initialized crossover.")
 
         self.logger.debug("Initializing callback...")
-        self.c = FacilityCallback()
+        self.c = OptimizerCallback()
         self.logger.debug("Initialized callback.")
 
         self.logger.debug("Initializing algorithm...")

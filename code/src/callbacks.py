@@ -1,7 +1,7 @@
 from pymoo.core.callback import Callback
 
 
-class FacilityCallback(Callback):
+class OptimizerCallback(Callback):
     def __init__(self) -> None:
         super().__init__()
         self.data["F"] = []

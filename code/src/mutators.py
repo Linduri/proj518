@@ -45,7 +45,7 @@ class FleetMutator(Mutation):
             rng = np.random.default_rng()
 
             np.put(
-                x[:, 1],
+                x[:, 0],
                 S,
                 rng.integers(0,
                              len(problem.c.facs),

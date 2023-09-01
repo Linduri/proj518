@@ -21,12 +21,11 @@ c = Compendium(facilities_csv,
 V = pd.read_csv("../data/vehicle_faults.csv")
 faults = V[['vehicle', 'procedure']].to_numpy()
 
-# Get vehicles and procedures
-VP = V[['vehicle', 'procedure']]
-
 PlotVehicleLocations(V[['vehicle', 'loc', 'latitude', 'longitude']],
                      c.facs[['name', 'latitude', 'longitude']])
 
 optim = FleetOptimizer(V[['vehicle', 'procedure', 'latitude', 'longitude']],
                        3,
                        c)
+
+res = optim.evaluate()
