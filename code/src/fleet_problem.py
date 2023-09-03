@@ -83,6 +83,7 @@ class Fleet(ElementwiseProblem):
 
         F = []
         for f, vp in df.groupby('f', as_index=False, group_keys=False):
+            print(f"Optimizing facility {f}")
             V = self.V.iloc[list(vp.index.values)]
             optim = FacilityOptimizer(
                 V[['vehicle', 'procedure']],
@@ -94,6 +95,7 @@ class Fleet(ElementwiseProblem):
 
             F.append(optim.evaluate().F)
 
+        print(F)
         return F.max()
 
     def _evaluate(self, x, out, *args, **kwargs):

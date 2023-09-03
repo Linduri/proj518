@@ -78,6 +78,7 @@ class Facility(ElementwiseProblem):
                                         'o',
                                         's',
                                         'd'])
+
             for _, c in C:
                 # Unpack bay procedure cluster operations (cO).
                 for _, _v, _p, _i, _b, _c in c.itertuples():
