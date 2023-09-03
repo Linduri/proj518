@@ -53,6 +53,7 @@ class Facility(ElementwiseProblem):
                       as_index=False,
                       group_keys=False)
 
+        # Group vehicle procedures into clusters (c) by vehicle.
         D['c'] = pd.concat([(b.v != b.v.shift()).cumsum() for _, b in B])
 
         # Unpack bay procedures.

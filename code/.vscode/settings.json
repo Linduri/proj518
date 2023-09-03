@@ -21,6 +21,8 @@
         "iterrows",
         "itertuples",
         "matplotlib",
+        "ndim",
+        "ndims",
         "nonconvex",
         "nsga",
         "optim",

@@ -92,11 +92,14 @@ class Fleet(ElementwiseProblem):
                 n_gen=self.n_gen,
                 c=self.c
             )
+            res = optim.evaluate()
+            F.append(res.algorithm.callback.data["F_best"])
 
-            F.append(optim.evaluate().F)
+        f_max = 0
+        for f in F:
+            f_max = max(f) if max(f) > f_max else f_max
 
-        print(F)
-        return F.max()
+        return f_max
 
     def _evaluate(self, x, out, *args, **kwargs):
         # Reshape data to column of assigned facility ids.

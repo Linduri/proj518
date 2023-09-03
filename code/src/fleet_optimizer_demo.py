@@ -24,8 +24,8 @@ V = pd.read_csv("../data/vehicle_faults.csv")
 faults = V[['vehicle', 'procedure']].to_numpy()
 
 optim = FleetOptimizer(V=V[['vehicle', 'procedure', 'latitude', 'longitude']],
-                       n_pop=25,
-                       n_gen=25,
+                       n_pop=3,
+                       n_gen=5,
                        c=c)
 
 res = optim.evaluate()
@@ -38,8 +38,12 @@ PlotVehicleLocations(V,
                      c.facs[['name', 'latitude', 'longitude']],
                      title="Un-optimized fleet")
 
+if res.X.ndim > 1:
+    res_x = res.X[0]
+    print(f"{len(res.X)} optimal solutions, showing the zeroth solution.")
+
 V_best = pd.DataFrame(columns=['loc'],
-                      data=res.X)
+                      data=res_x)
 
 V_best['vehicle'] = V['vehicle']
 V_best['procedure'] = V['procedure']
