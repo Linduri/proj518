@@ -32,7 +32,7 @@ class Facility(ElementwiseProblem):
         self.n_pop = n_pop
 
         super().__init__(n_var=n_var,
-                         n_obj=1,
+                         n_obj=2,
                          xl=0,  # xl=[0, 0],
                          xu=100,  # xu=[sys.maxsize, n_bays],
                          n_ieq_constr=1,
@@ -164,6 +164,9 @@ class Facility(ElementwiseProblem):
         # <0 is constrained.
         return -1
 
+    def _get_full_bays(self, D):
+        return len(pd.unique(D['b']))
+
     def _evaluate(self, x, out, *args, **kwargs):
         """Evaluates the facility problem.
 
@@ -187,7 +190,8 @@ class Facility(ElementwiseProblem):
 
         ops = self.expand_ops(D)
 
-        out['F'] = ops.t_e.max()
+        out['F'] = [ops.t_e.max(),
+                    self._get_full_bays(D)]
         self.logger.debug(f"\n{out['F']}")
 
         out['G'] = self.constrain_simultaneity(ops)

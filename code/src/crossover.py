@@ -55,6 +55,11 @@ class FleetCrossover(Crossover):
                 Y[0, i, :] = _a.reshape(a.shape)
                 Y[1, i, :] = _b.reshape(b.shape)
 
+            else:
+                # Else swap genes.
+                Y[0, i, :] = b
+                Y[1, i, :] = a
+
         return Y
 
 

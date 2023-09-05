@@ -43,9 +43,10 @@ V = V[['vehicle', 'procedure']].to_numpy()
 
 optim = FacilityOptimizer(V,
                           n_bays=3,
-                          n_pop=50,
-                          n_gen=50,
-                          c=c)
+                          n_pop=300,
+                          n_gen=20,
+                          c=c,
+                          verbose=True)
 res = optim.evaluate()
 
 val = res.algorithm.callback.data["F_best"]
@@ -53,7 +54,7 @@ plt.plot(np.arange(len(val)), val)
 plt.show()
 
 
-def print_opt(X):
+def get_best_solution(X):
     if X is None:
         return False
 
@@ -61,6 +62,14 @@ def print_opt(X):
         x = res.X[0] if X.shape[1] > 1 else res.X
     else:
         x = res.X
+
+        return x
+
+
+def print_opt(X):
+    x = get_best_solution(X)
+    if x is False:
+        return False
 
     x = np.reshape(x, (-1, 4))
 
@@ -74,3 +83,17 @@ def print_opt(X):
 
 if print_opt(res.X) is False:
     print("No constrained solutions found.")
+
+print("Best from each generation.")
+
+for i, x in enumerate(res.algorithm.callback.data["x_best"]):
+    if x is not None:
+        print(f"Generation {i}")
+        x = np.reshape(x, (-1, 4))
+
+        D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
+                         data=x)
+
+        ops = optim.p.expand_ops(D)
+        PlotBayOps(ops,
+                   color_col='v')

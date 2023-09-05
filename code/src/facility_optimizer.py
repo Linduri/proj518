@@ -4,7 +4,7 @@ import logging
 from facility_problem import Facility
 from mutators import BayMutator
 from crossover import BayCrossover
-from callbacks import OptimizerCallback
+from callbacks import OptimizerCallback, ObjectiveSpaceAnimation
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.termination import get_termination
 from pymoo.optimize import minimize
@@ -98,7 +98,8 @@ class FacilityOptimizer:
         self.logger.debug("Initialized crossover.")
 
         self.logger.debug("Initializing callback...")
-        self.c = OptimizerCallback()
+        # self.c = OptimizerCallback()
+        self.c = ObjectiveSpaceAnimation()
         self.logger.debug("Initialized callback.")
 
         self.logger.debug("Initializing algorithm...")
