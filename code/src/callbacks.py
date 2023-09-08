@@ -8,7 +8,7 @@ class OptimizerCallback(Callback):
     def __init__(self) -> None:
         super().__init__()
         self.data["F"] = []
-        self.data["F_best"] = []
+        self.data["F_opt"] = []
 
         self.data["X"] = []
         self.data["x_best"] = []
@@ -16,8 +16,13 @@ class OptimizerCallback(Callback):
 
     def notify(self, algorithm):
         F = algorithm.pop.get("F")
-        print(F)
-        # self.data["F"].append(F)
+        self.data["F"].append(F)
+
+        F_opt = algorithm.opt.get("F")
+        self.data["F_opt"].append(F_opt[0])
+
+        X = algorithm.opt.get("x")
+        self.data["x_best"].append(X)
         # self.data["F_best"].append(F.min())
 
         # X = algorithm.pop.get("x")

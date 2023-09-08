@@ -98,8 +98,8 @@ class FacilityOptimizer:
         self.logger.debug("Initialized crossover.")
 
         self.logger.debug("Initializing callback...")
-        # self.c = OptimizerCallback()
-        self.c = ObjectiveSpaceAnimation()
+        self.c = OptimizerCallback()
+        # self.c = ObjectiveSpaceAnimation()
         self.logger.debug("Initialized callback.")
 
         self.logger.debug("Initializing algorithm...")

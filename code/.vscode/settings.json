@@ -20,6 +20,7 @@
         "isin",
         "iterrows",
         "itertuples",
+        "linestyle",
         "matplotlib",
         "ndim",
         "ndims",
@@ -29,11 +30,15 @@
         "procs",
         "pymoo",
         "pyplot",
+        "sharex",
         "suptitle",
         "textcoords",
         "VHCL",
+        "xlabel",
         "xlim",
-        "xytext"
+        "xticks",
+        "xytext",
+        "ylabel"
     ],
     "python.analysis.extraPaths": [
         "./src",
