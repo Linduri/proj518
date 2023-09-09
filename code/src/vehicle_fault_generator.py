@@ -4,6 +4,7 @@ import random
 import logging
 import datetime
 from compendium import Compendium
+from time import perf_counter
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +16,7 @@ procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
 fault_output_csv = "../data/vehicle_faults.csv"
 
-n_vehicles = 10
+n_vehicles = 5
 
 start_date = datetime.date(2023, 7, 1)
 end_date = datetime.date(2023, 12, 1)
@@ -24,6 +25,8 @@ c = Compendium(facilities_csv,
                procedure_names_csv,
                procedure_steps_csv,
                operations_csv)
+
+start_time = perf_counter()
 
 logger.info(f"Generating {n_vehicles} names...")
 ids = random.sample(range(1000, 3000), n_vehicles)
@@ -91,3 +94,6 @@ logger.info(f"Saving to csv at {fault_output_csv}")
 faults.to_csv(fault_output_csv,
               index=False)
 logger.info("Saved!")
+
+end_time = perf_counter()
+logger.info(f"Finished in {(end_time - start_time)*1000}ms")
