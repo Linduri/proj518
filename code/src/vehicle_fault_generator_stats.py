@@ -29,12 +29,13 @@ c = Compendium(facilities_csv,
                operations_csv)
 
 res = []
+samples = 200
 n_range = np.array([*range(0, 105, 5)])
 for n_vehicles in n_range:
     res_trial = []
     logger.info(f"N vehicles {n_vehicles}")
-    for trial in range(100):
-        logger.info(f"Trial {trial}")
+    for trial in range(samples):
+        # logger.info(f"Trial {trial}")
         start_time = perf_counter()
 
         logger.debug(f"Generating {n_vehicles} names...")
@@ -115,13 +116,14 @@ n_vals = len(arr.flatten())
 
 res_trial = np.empty((0, 2))
 res_mean = np.empty((len(arr), 1))
+res_std = np.empty((len(arr), 1))
 res_lwr = np.empty((len(arr), 1))
 res_upr = np.empty((len(arr), 1))
 for i, trial in enumerate(arr):
     res_mean[i] = mean(trial)
-    res_std = np.std(trial)
-    res_lwr[i] = res_mean[i] - res_std
-    res_upr[i] = res_mean[i] + res_std
+    res_std[i] = np.std(trial)
+    res_lwr[i] = res_mean[i] - res_std[i]
+    res_upr[i] = res_mean[i] + res_std[i]
 
     T = np.empty((len(trial), 2))
     T[:, 0] = [n_range[i] for _ in range(len(T[:, 0]))]
@@ -134,12 +136,14 @@ fig, axs = plt.subplots(1,
 
 axs.plot(n_range,
          res_mean,
-         linestyle="dashed",
-         color="black")
+        #  linestyle="dashed",
+         color="red",
+         label="Mean")
 axs.plot(n_range,
          res_lwr,
          linestyle=":",
-         color="black")
+         color="black",
+         label="1 S.D")
 axs.plot(n_range,
          res_upr,
          linestyle=":",
@@ -150,9 +154,15 @@ axs.scatter(res_trial[:, 0],
             s=0.25,
             color="black")
 
-axs.set_ylabel("Duration (ms)")
+axs.set_ylabel("Compute Duration (ms)")
 
 plt.xlabel("Vehicles")
 # plt.xticks(range(len(n_range)), n_range)
 # plt.ylabel("F")
+plt.title(f"Samples Per Trial = {samples}")
+plt.grid()
+plt.legend()
+plt.suptitle("Vehicle Generator Compute Time vs. Number Of Vehicles")
 plt.show()
+
+print(f"Mean S.D {np.average(res_std)}")
