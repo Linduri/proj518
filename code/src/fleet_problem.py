@@ -83,7 +83,7 @@ class Fleet(ElementwiseProblem):
 
         F = []
         for f, vp in df.groupby('f', as_index=False, group_keys=False):
-            print(f"Optimizing facility {f}")
+            self.logger.info(f"Optimizing facility {f}")
             V = self.V.iloc[list(vp.index.values)]
             optim = FacilityOptimizer(
                 V[['vehicle', 'procedure']],
@@ -93,11 +93,16 @@ class Fleet(ElementwiseProblem):
                 c=self.c
             )
             res = optim.evaluate()
-            F.append(res.algorithm.callback.data["F_best"])
+            F.append(res.algorithm.callback.data["F_opt"])
 
         f_max = 0
         for f in F:
-            f_max = max(f) if max(f) > f_max else f_max
+            arr = np.array(f)
+            f_max = arr[:, 0].max() if arr[:, 0].max() > f_max else f_max
+
+        # If no results log a huge value to maximise penalty.
+        if f_max == 0:
+            f_max = 999999999999999
 
         return f_max
 

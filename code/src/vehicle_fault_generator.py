@@ -14,7 +14,7 @@ vehicle_locations_csv = "../data/vehicle_locations.csv"
 procedure_names_csv = "../data/procedure_names.csv"
 procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
-fault_output_csv = "../data/vehicle_faults.csv"
+fault_output_csv = "../data/vehicle_faults_2.csv"
 
 n_vehicles = 10
 

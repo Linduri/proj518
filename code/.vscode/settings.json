@@ -22,6 +22,7 @@
         "itertuples",
         "linestyle",
         "matplotlib",
+        "maximise",
         "ndim",
         "ndims",
         "nonconvex",

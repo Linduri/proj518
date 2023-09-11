@@ -16,7 +16,7 @@ vehicle_locations_csv = "../data/vehicle_locations.csv"
 procedure_names_csv = "../data/procedure_names.csv"
 procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
-fault_output_csv = "../data/vehicle_faults.csv"
+fault_output_csv = "../data/vehicle_faults_stats.csv"
 
 n_vehicles = 5
 
@@ -54,7 +54,7 @@ for n_vehicles in n_range:
             logger.debug((f"Selecting {n_faults} random procedure"
                          "{'s' if n_faults > 1 else ''}..."))
             vehicle_faults = c.procs.sample(n_faults)
-            logger.debug(f"Selected faults: {', '.join(vehicle_faults['name'])}")
+            logger.debug(f"Faults:{', '.join(vehicle_faults['name'])}")
 
             logger.debug(f"Generating {len(vehicle_faults)} failure dates...")
             fault_dates = []
@@ -63,7 +63,9 @@ for n_vehicles in n_range:
                 rand_days = random.randint(1, num_days)
                 random_date = start_date + datetime.timedelta(days=rand_days)
                 fault_dates.append(random_date)
-            fault_dates_strings = [date.strftime('%d/%m/%Y') for date in fault_dates]
+            fault_dates_strings = [
+                date.strftime('%d/%m/%Y') for date in fault_dates
+                ]
             fault_dates_epochs = [date.strftime('%s') for date in fault_dates]
             logger.debug(f"Generated dates: {', '.join(fault_dates_strings)}")
 
@@ -116,14 +118,16 @@ n_vals = len(arr.flatten())
 
 res_trial = np.empty((0, 2))
 res_mean = np.empty((len(arr), 1))
-res_std = np.empty((len(arr), 1))
+res_iqr = np.empty((len(arr), 1))
 res_lwr = np.empty((len(arr), 1))
 res_upr = np.empty((len(arr), 1))
+
 for i, trial in enumerate(arr):
     res_mean[i] = mean(trial)
-    res_std[i] = np.std(trial)
-    res_lwr[i] = res_mean[i] - res_std[i]
-    res_upr[i] = res_mean[i] + res_std[i]
+    res_lwr[i] = np.percentile(trial, 25)
+    res_upr[i] = np.percentile(trial, 75)
+
+    res_iqr[i] = res_upr[i] - res_lwr[i]
 
     T = np.empty((len(trial), 2))
     T[:, 0] = [n_range[i] for _ in range(len(T[:, 0]))]
@@ -136,14 +140,14 @@ fig, axs = plt.subplots(1,
 
 axs.plot(n_range,
          res_mean,
-        #  linestyle="dashed",
+         # linestyle="dashed",
          color="red",
          label="Mean")
 axs.plot(n_range,
          res_lwr,
          linestyle=":",
          color="black",
-         label="1 S.D")
+         label="Upper/Lower Quartile")
 axs.plot(n_range,
          res_upr,
          linestyle=":",
@@ -165,4 +169,13 @@ plt.legend()
 plt.suptitle("Vehicle Generator Compute Time vs. Number Of Vehicles")
 plt.show()
 
-print(f"Mean S.D {np.average(res_std)}")
+plt.clf()
+plt.plot(n_range,
+         res_iqr,
+         color="black")
+plt.ylabel("Compute Duration IQR (ms)")
+plt.xlabel("Vehicles")
+plt.grid()
+plt.show()
+
+print(f"Mean IQR {np.average(res_iqr)}")

@@ -42,9 +42,18 @@ for i, f in enumerate(F):
     F_gen = np.concatenate([F_gen, b])
 
 F_mean = np.array([[mean(_f) for _f in f.T] for f in F])
-F_std = np.array([[np.std(_f) for _f in f.T] for f in F])
-F_lwr = F_mean - F_std
-F_upr = F_mean + F_std
+
+# F_spread = np.array([
+#     [
+#         np.percentile(_f, 75) - np.percentile(_f, 25)for _f in f.T
+#     ] for f in F
+#     ])
+# F_spread = np.array([[np.std(_f) for _f in f.T] for f in F])
+# F_lwr = F_mean - F_spread/2
+# F_upr = F_mean + F_spread/2
+
+F_lwr = np.array([[np.percentile(_f, 25)for _f in f.T] for f in F])
+F_upr = np.array([[np.percentile(_f, 75)for _f in f.T] for f in F]) 
 
 y_labels = ['Maintenance Duration', 'Bay Utilisation']
 
@@ -67,7 +76,7 @@ for c, f in enumerate(F_mean.T):
                 F_lwr[:, c],
                 linestyle="dashed",
                 color="black",
-                label="1 S.D")
+                label="Upper/Lower Quartile")
     axs[c].plot(x,
                 F_upr[:, c],
                 linestyle="dashed",
