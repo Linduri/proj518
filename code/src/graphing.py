@@ -5,13 +5,20 @@ import pandas as pd
 
 def PlotBayOps(D,
                color_col=None,
-               verbose=False):
-    D["vp"] = ' Vehicle: ' +\
-        D.v.astype(str) +\
-        ' Procedure: ' +\
-        D.p.astype(str) +\
-        ' Operation: ' +\
-        D.o.astype(str)
+               verbose=False,
+               fig_in=None,
+               labels=True,
+               x_max=None):
+
+    if labels is True:
+        D["vp"] = ' Vehicle: ' +\
+            D.v.astype(str) +\
+            ' Procedure: ' +\
+            D.p.astype(str) +\
+            ' Operation: ' +\
+            D.o.astype(str)
+    else:
+        D["vp"] = [i for i in range(len(D.v))]
 
     # Which column to use as the color gradient (g).
     g = 'o' if color_col is None else color_col
@@ -29,10 +36,14 @@ def PlotBayOps(D,
     _D['color'] = _D.i_g.astype(int).map(pd.Series(palette))
 
     n_bays = len(_D.b.unique())
-    fig, axs = plt.subplots(n_bays,
-                            figsize=(15, 15))
 
-    x_lim = _D.t_e.max()
+    if fig_in is None:
+        fig, axs = plt.subplots(n_bays,
+                                figsize=(15, 15))
+    else:
+        axs = fig_in.subplots(n_bays)
+
+    x_lim = x_max if x_max is not None else _D.t_e.max()
 
     B = _D.groupby('b',
                    as_index=False,
@@ -44,13 +55,24 @@ def PlotBayOps(D,
                 left=b.t_s,
                 color=b.color)
 
-        ax.set_title(f"Bay {i}")
+        ax.set_title(f"Bay {i}",
+                     loc='left')
         ax.set_xlim([0, x_lim])
+        ax.grid()
 
-    plt.show()
+        if labels is False:
+            ax.yaxis.set_tick_params(labelleft=False)
+
+    if fig_in is None:
+        plt.show()
 
     if verbose is True:
         print(_D)
+
+    if fig_in is None:
+        return fig
+    else:
+        return fig_in
 
 
 def PlotVehicleLocations(D, F, title=None):

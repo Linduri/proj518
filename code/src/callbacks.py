@@ -1,5 +1,3 @@
-import numpy as np
-import pandas as pd
 from pymoo.core.callback import Callback
 import matplotlib.pyplot as plt
 

@@ -2,7 +2,6 @@ import numpy as np
 import pickle
 from statistics import mean
 import matplotlib.pyplot as plt
-import math
 from facility_optimizer import FacilityOptimizer
 from compendium import Compendium
 from graphing import PlotBayOps
@@ -13,10 +12,10 @@ procedure_names_csv = "../data/procedure_names.csv"
 procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
 
-c = Compendium(facilities_csv,
-               procedure_names_csv,
-               procedure_steps_csv,
-               operations_csv)
+compendium = Compendium(facilities_csv,
+                        procedure_names_csv,
+                        procedure_steps_csv,
+                        operations_csv)
 
 # file = '../data/pickles/facility_optim.pkl'
 file = '../data/pickles/facility_optim_pop_100_gen_100_dur_896410ms.pkl'
@@ -95,28 +94,27 @@ for i in range(1, len(arr) - 1):
     if np.array_equiv(arr[i], arr[i+1]) is False:
         g_opt.append(i)
 
-i_opt = range(len(g_opt))
+diff = [g_opt[i + 1] - g_opt[i] for i in range(len(g_opt)-1)]
+i_diff = [i for i, d in enumerate(diff) if d != 1]
+g_diff = np.array(g_opt)[np.array(i_diff)+1]
+
+i_opt = range(len(g_diff))
 
 plt.clf()
-plt.plot(g_opt,
-         i_opt,
+plt.plot(i_opt,
+         g_diff,
          'o',
          linestyle="-",
          color='black')
 plt.grid()
-plt.ylabel("Optimum Number")
-plt.xlabel("Generation")
-plt.title("Optimum Number vs Generation")
+plt.xlabel("Optimum Number")
+plt.ylabel("Generation")
+# plt.title("Optimum Number vs Generation")
+plt.xticks(i_opt)
 plt.show()
-
-diff = [g_opt[i + 1] - g_opt[i] for i in range(len(g_opt)-1)]
-i_diff = [i for i, d in enumerate(diff) if d != 1]
-g_diff = np.array(g_opt)[np.array(i_diff)+1]
-print(g_diff)
 
 n_pop = 100
 n_gen = 100
-
 
 # Load vehicle faults.
 V = pd.read_csv("../data/vehicle_faults.csv")
@@ -126,77 +124,44 @@ optim = FacilityOptimizer(V,
                           n_bays=3,
                           n_pop=n_pop,
                           n_gen=n_gen,
-                          c=c,
+                          c=compendium,
                           verbose=True)
 
-cols = 2
-fig, axs = plt.subplots(math.ceil(len(g_diff)/cols),
-                        cols,
-                        sharex=True,
-                        figsize=(10, 10))
-for c, g in enumerate(g_diff):
-    x = res.algorithm.callback.data["x_best"][g]
+x_max = 0
+t_e = []
+for i in range(len(g_diff)):
+    gen = g_diff[i-1]
+    x = res.algorithm.callback.data["x_best"][gen]
     if x is not None:
         x = np.reshape(x, (-1, 4))
         D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
                          data=x)
 
         ops = optim.p.expand_ops(D)
+
+        max = ops.t_e.max()
+        t_e.append((gen, ops.t_e.max()))
+        x_max = max if max > x_max else x_max
+
+for i in range(len(g_diff)):
+    gen = g_diff[i-1]
+    x = res.algorithm.callback.data["x_best"][gen]
+    if x is not None:
+        print(f"Gen {gen}")
+        x = np.reshape(x, (-1, 4))
+        D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
+                         data=x)
+
+        ops = optim.p.expand_ops(D)
+        fig = plt.figure(constrained_layout=True,
+                         figsize=(10, 10))
         PlotBayOps(ops,
-                   color_col='v')
-    
-    # for i, x in enumerate(res.algorithm.callback.data["x_best"]):
-#     if x is not None:
-#         print(f"Generation {i}")
-#         x = np.reshape(x, (-1, 4))
+                   color_col='v',
+                   labels=False,
+                   x_max=x_max,
+                   fig_in=fig)
 
-#         D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
-#                          data=x)
-
-#         ops = optim.p.expand_ops(D)
-#         PlotBayOps(ops,
-#                    color_col='v')
-
-# def get_best_solution(X):
-#     if X is None:
-#         return False
-
-#     if len(X.shape) > 1:
-#         x = res.X[0] if X.shape[1] > 1 else res.X
-#     else:
-#         x = res.X
-
-#         return x
-
-
-# def print_opt(X):
-#     x = get_best_solution(X)
-#     if x is False:
-#         return False
-
-#     x = np.reshape(x, (-1, 4))
-
-#     D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
-#                      data=x)
-
-#     ops = optim.p.expand_ops(D)
-#     PlotBayOps(ops,
-#                color_col='v')
-
-
-# if print_opt(res.X) is False:
-#     print("No constrained solutions found.")
-
-# print("Best from each generation.")
-
-# for i, x in enumerate(res.algorithm.callback.data["x_best"]):
-#     if x is not None:
-#         print(f"Generation {i}")
-#         x = np.reshape(x, (-1, 4))
-
-#         D = pd.DataFrame(columns=['v', 'p', 'i', 'b'],
-#                          data=x)
-
-#         ops = optim.p.expand_ops(D)
-#         PlotBayOps(ops,
-#                    color_col='v')
+t_e = np.array(t_e)
+t_e = t_e[t_e[:, 0].argsort()]
+savings = (1 - (t_e[-1, 1]/t_e[0, 1]))*100
+print(f"The final optimised solution is {savings}% shorter than the first optimal solution.")
