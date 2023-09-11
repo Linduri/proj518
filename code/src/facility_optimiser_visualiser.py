@@ -52,8 +52,8 @@ F_mean = np.array([[mean(_f) for _f in f.T] for f in F])
 # F_lwr = F_mean - F_spread/2
 # F_upr = F_mean + F_spread/2
 
-F_lwr = np.array([[np.percentile(_f, 25)for _f in f.T] for f in F])
-F_upr = np.array([[np.percentile(_f, 75)for _f in f.T] for f in F]) 
+F_lwr = np.array([[np.percentile(_f, 25) for _f in f.T] for f in F])
+F_upr = np.array([[np.percentile(_f, 75) for _f in f.T] for f in F])
 
 y_labels = ['Maintenance Duration', 'Bay Utilisation']
 
@@ -173,4 +173,4 @@ for i in range(len(g_diff)):
 t_e = np.array(t_e)
 t_e = t_e[t_e[:, 0].argsort()]
 savings = (1 - (t_e[-1, 1]/t_e[0, 1]))*100
-print(f"The final optimised solution is {savings}% shorter than the first optimal solution.")
+print(f"The final solution is {savings}% shorter than the first solution.")

@@ -39,32 +39,3 @@ with open(f"../data/pickles/fleet_optim_pop_{n_pop}_gen_{n_gen}_dur_{duration}ms
     pickle.dump(res, f)
 
 logger.info("Done")
-
-# val = res.algorithm.callback.data["F_best"]
-# plt.plot(np.arange(len(val)), val)
-# plt.show()
-
-# PlotVehicleLocations(V,
-#                      c.facs[['name', 'latitude', 'longitude']],
-#                      title="Un-optimized fleet")
-
-# if res.X.ndim > 1:
-#     res_x = res.X[0]
-#     print(f"{len(res.X)} optimal solutions, showing the zeroth solution.")
-
-# V_best = pd.DataFrame(columns=['loc'],
-#                       data=res_x)
-
-# V_best['vehicle'] = V['vehicle']
-# V_best['procedure'] = V['procedure']
-
-# i_F = np.arange(len(c.facs))
-# lat_dict = (dict(zip(i_F, c.facs['latitude'])))
-# lon_dict = (dict(zip(i_F, c.facs['longitude'])))
-
-# V_best["latitude"] = V_best["loc"].map(lat_dict)
-# V_best["longitude"] = V_best["loc"].map(lon_dict)
-
-# PlotVehicleLocations(V_best,
-#                      c.facs[['name', 'latitude', 'longitude']],
-#                      title="Optimized fleet")
