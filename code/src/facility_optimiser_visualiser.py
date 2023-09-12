@@ -52,10 +52,13 @@ F_mean = np.array([[mean(_f) for _f in f.T] for f in F])
 # F_lwr = F_mean - F_spread/2
 # F_upr = F_mean + F_spread/2
 
+F_iqr = np.array([
+    [np.percentile(_f, 75)-np.percentile(_f, 25)for _f in f.T] for f in F
+    ])
 F_lwr = np.array([[np.percentile(_f, 25) for _f in f.T] for f in F])
 F_upr = np.array([[np.percentile(_f, 75) for _f in f.T] for f in F])
 
-y_labels = ['Maintenance Duration', 'Bay Utilisation']
+y_labels = ['Maintenance Duration (ms)', 'Bay Utilisation']
 
 fig, axs = plt.subplots(F_mean.shape[1],
                         1,
@@ -88,13 +91,35 @@ for c, f in enumerate(F_mean.T):
                    color="gray")
 
     axs[c].set_ylabel(y_labels[c])
+    axs[c].grid()
 
 axs[0].legend()
 plt.xlabel("Generation")
 # x = np.arange(len(F), step=5)
 # plt.xticks(range(len(x)), x)
-plt.grid()
-plt.suptitle("Facility Optimiser Evolution \nPopulation = 100")
+plt.suptitle("Population = 100")
+plt.show()
+
+plt.clf()
+y_labels = ['Maintenance Duration IQR (ms)', 'Bay Utilisation IQR']
+fig, axs = plt.subplots(F_mean.shape[1],
+                        1,
+                        sharex=True,
+                        figsize=(10, 10))
+for c, f in enumerate(F_mean.T):
+    x = np.arange(len(f))
+    axs[c].plot(x,
+                F_iqr[:, c],
+                color="black")
+
+    axs[c].set_ylabel(y_labels[c])
+    axs[c].grid()
+
+axs[0].legend()
+plt.xlabel("Generation")
+# x = np.arange(len(F), step=5)
+# plt.xticks(range(len(x)), x)
+plt.suptitle("Population = 100")
 plt.show()
 
 arr = res.algorithm.callback.data["x_best"]

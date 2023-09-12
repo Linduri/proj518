@@ -75,7 +75,11 @@ def PlotBayOps(D,
         return fig_in
 
 
-def PlotVehicleLocations(D, F, title=None):
+def PlotVehicleLocations(D,
+                         F,
+                         title=None,
+                         x_lim=None,                     
+                         y_lim=None):
     # Plot locations to graph.
     fig, ax = plt.subplots()
 
@@ -116,6 +120,16 @@ def PlotVehicleLocations(D, F, title=None):
     # Plot facilities.
     ax.scatter(x=F['latitude'],
                y=F['longitude'])
+
+    ax.set_xlabel("Latitude")
+    ax.set_ylabel("Longitude")
+    ax.grid()
+
+    if x_lim is not None:
+        ax.set_xlim(x_lim)
+
+    if y_lim is not None:
+        ax.set_ylim(y_lim)
 
     for _, name, lat, lon in F.itertuples():
         ax.annotate(str(name).capitalize(),
