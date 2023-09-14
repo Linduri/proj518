@@ -1,19 +1,22 @@
 import pandas as pd
+import numpy as np
 import random
 import logging
 import datetime
 from compendium import Compendium
+from time import perf_counter
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
 
 facilities_csv = "../data/facilities.csv"
+vehicle_locations_csv = "../data/vehicle_locations.csv"
 procedure_names_csv = "../data/procedure_names.csv"
 procedure_steps_csv = "../data/procedure_steps.csv"
 operations_csv = "../data/operations.csv"
-fault_output_csv = "../data/faults.csv"
+fault_output_csv = "../data/vehicle_faults_2.csv"
 
-n_vehicles = 5
+n_vehicles = 10
 
 start_date = datetime.date(2023, 7, 1)
 end_date = datetime.date(2023, 12, 1)
@@ -22,6 +25,8 @@ c = Compendium(facilities_csv,
                procedure_names_csv,
                procedure_steps_csv,
                operations_csv)
+
+start_time = perf_counter()
 
 logger.info(f"Generating {n_vehicles} names...")
 ids = random.sample(range(1000, 3000), n_vehicles)
@@ -49,16 +54,46 @@ for idx, name in enumerate(names):
         random_date = start_date + datetime.timedelta(days=rand_days)
         fault_dates.append(random_date)
     fault_dates_strings = [date.strftime('%d/%m/%Y') for date in fault_dates]
+    fault_dates_epochs = [date.strftime('%s') for date in fault_dates]
     logger.debug(f"Generated dates: {', '.join(fault_dates_strings)}")
 
     new_rows = pd.DataFrame(
-        {"vehicle": [name for _ in range(vehicle_faults.shape[0])],
+        {"vehicle": [idx for _ in range(vehicle_faults.shape[0])],
          "procedure": vehicle_faults["id"],
-         "failure_date": fault_dates_strings})
+         "failure_date": fault_dates_epochs})
 
     faults = pd.concat([faults, new_rows], ignore_index=True)
 
+logger.info("Generating vehicle locations...")
+locs = pd.read_csv(vehicle_locations_csv)
+# Randomize locations
+locs = locs.sample(frac=1)
+
+rng = np.random.default_rng()
+i_max = n_vehicles if n_vehicles < len(locs) else len(locs)
+i_rnd = rng.integers(0,
+                     i_max,
+                     n_vehicles)
+
+i_arr = np.arange(n_vehicles)
+
+loc_dict = (dict(zip(i_arr, i_rnd)))
+
+lat_dict = (dict(zip(i_arr, locs['latitude'])))
+lon_dict = (dict(zip(i_arr, locs['longitude'])))
+
+faults['loc'] = faults["vehicle"].map(loc_dict)
+
+faults["latitude"] = faults["loc"].map(lat_dict)
+faults["longitude"] = faults["loc"].map(lon_dict)
+
+logger.info("Generated vehicle locations.")
+
 logger.info(faults)
 logger.info(f"Saving to csv at {fault_output_csv}")
-faults.to_csv(fault_output_csv)
+faults.to_csv(fault_output_csv,
+              index=False)
 logger.info("Saved!")
+
+end_time = perf_counter()
+logger.info(f"Finished in {(end_time - start_time)*1000}ms")

@@ -2,3 +2,4 @@ pandas
 numpy
 pymoo
 ipykernel
+piso
