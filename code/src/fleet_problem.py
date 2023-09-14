@@ -17,19 +17,16 @@ class Fleet(ElementwiseProblem):
                  c: Compendium,
                  elementwise=True,
                  **kwargs):
-        """_summary_
+        """Initialise the fleet problem.
 
         Args:
-            V (_type_): Vehicle information.
-             ____________________________________________
-            | vehicle | procedure | latitude | longitude |
-            |=========|===========|==========|===========|
-            |   int   |    int    |  float   |   float   |
-            |   ...   |    ...    |   ...    |    ...    |
-
-            n_pop (_type_): Size of population to evolve.
-            c (Compendium): _description_
-            elementwise (bool, optional): _description_. Defaults to True.
+            F: List of facilities.
+            V: List of vehicles and facility assignments.
+            n_pop (int): Optimiser population size.
+            n_gen (int): Optimiser termination generation.
+            c (Compendium): Static vehicle information.
+            elementwise (bool, optional): Run the evaluator in series.
+            Defaults to True.
         """
         self.logger = logging.getLogger(__name__)
         self.logger.debug("Initializing fleet problem...")
@@ -77,6 +74,15 @@ class Fleet(ElementwiseProblem):
 
     def _max_duration(self,
                       F: np.array) -> float:
+        """Find the maximum end time of any operation
+        across all facilities.
+
+        Args:
+            F: List of facility assignments.
+
+        Returns:
+            The maximum facility operation end time.
+        """
 
         df = pd.DataFrame(columns=['f'],
                           data=F)
@@ -107,6 +113,14 @@ class Fleet(ElementwiseProblem):
         return f_max
 
     def _evaluate(self, x, out, *args, **kwargs):
+        """Evaluates the fleet problem.
+
+        Args:
+            x: Population member to evaluate.
+
+            out: Evaluation results.
+        """
+
         # Reshape data to column of assigned facility ids.
         F = np.reshape(x, (-1, 1))
 

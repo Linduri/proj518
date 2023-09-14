@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 
 
 class OptimizerCallback(Callback):
+    """Records data from each optimiser generation."""
+
     def __init__(self) -> None:
         super().__init__()
         self.data["F"] = []
@@ -21,26 +23,11 @@ class OptimizerCallback(Callback):
 
         X = algorithm.opt.get("x")
         self.data["x_best"].append(X)
-        # self.data["F_best"].append(F.min())
-
-        # X = algorithm.pop.get("x")
-        # self.data["x_f_min"].append(X[F.argmin()])
-        # self.data["X"].append(algorithm.pop.get("x"))
-        # G = algorithm.pop.get("G")
-        # df = pd.DataFrame(columns=['X', 'F', 'G'])
-        # df['X'] = np.arange(len(X))
-        # df['F'] = F
-        # df['G'] = G
-
-        # df = df.loc[df['G'] < 0]
-        # df = df.sort_values(by=['F'],
-        #                     ascending=True)
-        # best = df.head(1)
-        # best = None if best.empty else X[best['X']]
-        # self.data["x_best"].append(best)
 
 
 class ObjectiveSpaceAnimation(Callback):
+    """Prints the pareto front for each optimiser generation.
+    """
 
     def _update(self, algorithm):
 

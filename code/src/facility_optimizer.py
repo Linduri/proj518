@@ -4,7 +4,7 @@ import logging
 from facility_problem import Facility
 from mutators import BayMutator
 from crossover import BayCrossover
-from callbacks import OptimizerCallback, ObjectiveSpaceAnimation
+from callbacks import OptimizerCallback
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.termination import get_termination
 from pymoo.optimize import minimize
@@ -12,6 +12,8 @@ from compendium import Compendium
 
 
 class FacilityOptimizer:
+    """Optimize a list of procedure bay assignments.
+    """
 
     def __init__(self,
                  V: np.array,
@@ -20,19 +22,15 @@ class FacilityOptimizer:
                  n_gen: int,
                  c: Compendium,
                  verbose=False) -> None:
-        """_summary_
+        """Initialise the facility optimiser.
 
         Args:
-            V (np.array): List of vehicle id against
-            procedure id.
-             _____________________
-            | vehicle | procedure |
-            |=========|===========|
-            |   int   |    int    |
-            |   ...   |    ...    |
-
-            c (Compendium): Collection of static
-            vehicle and facility data.
+            V: List of vehicles and procedures.
+            n_bays (int): Number of bays in this facility.
+            n_pop (int): Optimiser population size.
+            n_gen (int): Optimiser termination generation.
+            c (Compendium): Static vehicle information.
+            verbose (bool, optional): Log detailed output. Defaults to False.
         """
         self.logger = logging.getLogger(__name__)
 
@@ -116,6 +114,18 @@ class FacilityOptimizer:
         self.logger.debug("Initialized termination.")
 
     def seed_pop(self, V, n_bays, n_pop, flatten=True):
+        """Initialise the optimiser population from
+        a vehicle procedures list.
+
+        Args:
+            V: List of vehicles and procedures.
+            n_bays (int): Number of bays in this facility.
+            n_pop (int): Optimiser population size.
+            flatten (bool, optional): Flatten each member. Defaults to True.
+
+        Returns:
+            Initial optimizer population.
+        """
         pop = []
 
         # Generate sequential base list of priorities (P)
@@ -145,6 +155,14 @@ class FacilityOptimizer:
         return np.array(pop)
 
     def evaluate(self, seed=0):
+        """Optimiser a solution
+
+        Args:
+            seed (int, optional): Seed the optimiser state. Defaults to 0.
+
+        Returns:
+            Object containing result and optimization data.
+        """
 
         self.logger.debug("Minimizing problem...")
         res = minimize(

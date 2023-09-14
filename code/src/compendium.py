@@ -3,6 +3,8 @@ import logging
 
 
 class Compendium:
+    """Store static data for easy management.
+    """
 
     def __init__(self,
                  facilities_path,

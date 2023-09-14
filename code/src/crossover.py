@@ -3,6 +3,9 @@ from pymoo.core.crossover import Crossover
 
 
 class FleetCrossover(Crossover):
+    """The crossover mechanism to cross two potential
+    facility assignment lists.
+    """
 
     def __init__(self, shift=False, prob=0.5, **kwargs):
         n_parents = 2
@@ -13,23 +16,14 @@ class FleetCrossover(Crossover):
         self.shift = shift
 
     def _do(self, problem, X, **kwargs):
-        """
-        Reshape the population into an array of
-        members.
+        """Cross over two facility assignment lists.
 
-        [ # Population
-            [ # Member one
-                [fac_id_0],
-                [fac_id_1],
-                [fac_id_2]
-            ],
-            [ # Member Two
-                [fac_id_0],
-                [fac_id_1],
-                [fac_id_2]
-            ]
-        ]
+        Args:
+            problem: The pymoo problem being optimised.
+            X: Collection of matings.
 
+        Returns:
+            Crossed matings.
         """
         _, n_matings, n_var = X.shape
         Y = np.full((self.n_offsprings,
@@ -64,6 +58,9 @@ class FleetCrossover(Crossover):
 
 
 class BayCrossover(Crossover):
+    """The crossover mechanism to cross two potential
+    bay assignment lists.
+    """
 
     def __init__(self, shift=False, prob=0.5, **kwargs):
         n_parents = 2
@@ -74,24 +71,14 @@ class BayCrossover(Crossover):
         self.shift = shift
 
     def _do(self, problem, X, **kwargs):
-        """
+        """Cross over two bay assignment lists.
 
-        Reshape the population into an array of
-        members.
+        Args:
+            problem: The pymoo problem being optimised.
+            X: Collection of matings.
 
-        [ # Population
-            [ # Member one
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay]
-            ],
-            [ # Member Two
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay]
-            ]
-        ]
-
+        Returns:
+            Crossed matings.
         """
         _, n_matings, n_var = X.shape
         Y = np.full((self.n_offsprings,

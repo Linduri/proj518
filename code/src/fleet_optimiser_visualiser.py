@@ -25,11 +25,6 @@ with open(file, 'rb') as f:
 F_opt = np.array(res.algorithm.callback.data["F_opt"])
 F = np.array(res.algorithm.callback.data["F"])
 
-# # F0_mean = np.array([mean(f.T[0]) for f in F])
-# # F0_std = np.array([np.std(f.T[0]) for f in F])
-# # F0_lwr = F0_mean - F0_std
-# # F0_upr = F0_mean + F0_std
-
 n_f = F.shape[len(F.shape) - 1]
 F_gen = np.empty((0, n_f+1))
 for i, f in enumerate(F):
@@ -42,14 +37,6 @@ for i, f in enumerate(F):
 
 F_mean = np.array([[mean(_f) for _f in f.T] for f in F])
 
-# F_spread = np.array([
-#     [
-#         np.percentile(_f, 75) - np.percentile(_f, 25)for _f in f.T
-#     ] for f in F
-#     ])
-# F_spread = np.array([[np.std(_f) for _f in f.T] for f in F])
-# F_lwr = F_mean - F_spread/2
-# F_upr = F_mean + F_spread/2
 
 F_lwr = np.array([[np.percentile(_f, 25) for _f in f.T] for f in F])
 F_upr = np.array([[np.percentile(_f, 75) for _f in f.T] for f in F])
@@ -91,8 +78,7 @@ for c, f in enumerate(F_mean.T):
 
     axs[c].legend()
 plt.xlabel("Generation")
-# x = np.arange(len(F), step=5)
-# plt.xticks(range(len(x)), x)
+
 plt.suptitle("Population = 25")
 plt.show()
 

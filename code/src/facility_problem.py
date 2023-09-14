@@ -6,6 +6,8 @@ import logging
 
 
 class Facility(ElementwiseProblem):
+    """Defines the facility optimization problem.
+    """
 
     def __init__(self,
                  n_var,
@@ -15,14 +17,18 @@ class Facility(ElementwiseProblem):
                  ops,
                  elementwise=True,
                  **kwargs):
-        """Initializes the facility problem.
+        """Initialise the facility problem.
 
         Args:
-            n_var (_type_): Number of decision variables.
-            n_bays (_type_): Maximum number of bays in a facility,
-            ops (_type_): List of operations and step number for each
-                procedure.
+            n_var: Number of decision variables.
+            n_bays (int): Number of bays in this facility.
+            n_pop (int): Optimiser population size.
+            n_rows The number of vehicle procedures.
+            ops: A list of the operations used in the vehicle procedures.
+            elementwise (bool, optional): Run the evaluator in series.
+            Defaults to True.
         """
+
         self.logger = logging.getLogger(__name__)
         self.logger.debug("Initializing facility problem...")
         self.ops = ops
@@ -42,6 +48,15 @@ class Facility(ElementwiseProblem):
         self.logger.debug("Initialized facility problem.")
 
     def expand_ops(self, D):
+        """Expand a list of vehicle procedures into their
+        operations.
+
+        Args:
+            D: List of vehicle and procedures.
+
+        Returns:
+            List of vehicle and their operations.
+        """
         # Find adjacent vehicle procedures.
         D['c'] = D.groupby('b').cumcount()
 
@@ -165,15 +180,23 @@ class Facility(ElementwiseProblem):
         return -1
 
     def _get_full_bays(self, D):
+        """Get the number of occupied bays.
+
+        Args:
+            D: List of vehicles and their operations.
+
+        Returns:
+            Number of full bays,
+        """
         return len(pd.unique(D['b']))
 
     def _evaluate(self, x, out, *args, **kwargs):
         """Evaluates the facility problem.
 
         Args:
-            x (_type_): Population member to evaluate.
+            x: Population member to evaluate.
 
-            out (_type_): Evaluation results.
+            out: Evaluation results.
         """
 
         # Reshape to four columns...

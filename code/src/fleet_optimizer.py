@@ -18,19 +18,14 @@ class FleetOptimizer:
                  n_pop: int,
                  n_gen: int,
                  c: Compendium) -> None:
-        """_summary_
+        """Initialise an optimizer to optimize
+        a list of facility assignments.
 
         Args:
-            V (pd.DataFrame): List of vehicles, procedures and locations.
-             ____________________________________________
-            | vehicle | procedure | latitude | longitude |
-            |=========|===========|==========|===========|
-            |   int   |    int    |  float   |   float   |
-            |   ...   |    ...    |   ...    |    ...    |
-
-            n_pop (_type_): Size of population to evolve.
-            c (Compendium): Collection of static
-            vehicle and facility data.
+            V: List of vehicles and procedures.
+            n_pop (int): Optimiser population size.
+            n_gen (int): Optimiser termination generation.
+            c (Compendium): Static vehicle information.
         """
         self.logger = logging.getLogger(__name__)
 
@@ -84,22 +79,16 @@ class FleetOptimizer:
                  V,
                  n_pop,
                  flatten=True):
-        """_summary_
+        """Initialise the optimiser population from
+        a procedures bay list.
 
         Args:
-            V (_type_): _description_
-             ____________________________________________
-            | vehicle | procedure | latitude | longitude |
-            |=========|===========|==========|===========|
-            |   int   |    int    |  float   |   float   |
-            |   ...   |    ...    |   ...    |    ...    |
-
-            n_bays (_type_): _description_
-            n_pop (_type_): _description_
-            flatten (bool, optional): _description_. Defaults to True.
+            V: List of vehicles and procedures.
+            n_pop (int): Optimiser population size.
+            flatten (bool, optional): Flatten each member. Defaults to True.
 
         Returns:
-            _type_: _description_
+            Initial optimizer population.
         """
         pop = []
         rng = np.random.default_rng()
@@ -125,6 +114,14 @@ class FleetOptimizer:
         return np.array(pop)
 
     def evaluate(self, seed=0):
+        """Optimiser a solution
+
+        Args:
+            seed (int, optional): Seed the optimiser state. Defaults to 0.
+
+        Returns:
+            Object containing result and optimization data.
+        """
 
         self.logger.debug("Minimizing problem...")
         res = minimize(

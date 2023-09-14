@@ -3,8 +3,8 @@ from pymoo.core.mutation import Mutation
 
 
 class FleetMutator(Mutation):
-    """
-    Mutates facility assignments.
+    """The mutation mechanism to mutate a
+    facility assignment lists.
     """
 
     def __init__(self, prob=0.5):
@@ -12,23 +12,14 @@ class FleetMutator(Mutation):
         self.prob = prob
 
     def _do(self, problem, X, **kwargs):
-        """
-        Reshape the population into an array of
-        members.
+        """Mutate a facility assignment list.
 
-        [ # Population
-            [ # Member one
-                [fac_id_0],
-                [fac_id_1],
-                [fac_id_2]
-            ],
-            [ # Member Two
-                [fac_id_0],
-                [fac_id_1],
-                [fac_id_2]
-            ]
-        ]
+        Args:
+            problem: The pymoo problem being optimised.
+            X: Population.
 
+        Returns:
+            Mutated population.
         """
 
         _X = X.copy().reshape((-1, len(problem.V), 1))
@@ -56,8 +47,8 @@ class FleetMutator(Mutation):
 
 
 class BayMutator(Mutation):
-    """
-    Mutates bay assignments.
+    """The mutation mechanism to mutate a
+    bay assignment lists.
     """
 
     def __init__(self, prob=0.5):
@@ -65,24 +56,14 @@ class BayMutator(Mutation):
         self.prob = prob
 
     def _do(self, problem, X, **kwargs):
-        """
+        """Mutate a bay assignment list.
 
-        Reshape the population into an array of
-        members.
+        Args:
+            problem: The pymoo problem being optimised.
+            X: Population.
 
-        [ # Population
-            [ # Member one
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay]
-            ],
-            [ # Member Two
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay],
-                [vehicle, procedure, priority, bay]
-            ]
-        ]
-
+        Returns:
+            Mutated population.
         """
 
         _X = X.copy().reshape((-1, problem.n_rows, problem.n_cols))
